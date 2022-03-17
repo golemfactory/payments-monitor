@@ -13,6 +13,7 @@ def get_erc20_transaction_details(token_contract, tx_id):
     if transaction_info.to.lower() != token_contract.address.lower():
         raise Exception(f"Seems like transaction is not with expected token: {transaction_info.to} vs {token_contract.address}")
 
+    # both transaction info and transaction receipt are needed to get full transaction data
     try:
         transaction_receipt = w3.eth.getTransactionReceipt(tx_id)
     except web3.exceptions.TransactionNotFound:
@@ -31,10 +32,12 @@ def get_erc20_transaction_details(token_contract, tx_id):
             transfer_info["from"] = log["args"]["from"]
             transfer_info["to"] = log["args"]["to"]
             transfer_info["value"] = log["args"]["value"]
+            # Human value is for tokens with 18 decimals, like GLM. It's human read-able (but it's loosing precision)
             transfer_info["human_value"] = transfer_info["value"] / 1.0E18
             transfer_info["gas_used"] = transaction_receipt["gasUsed"]
             transfer_info["gas_price"] = transaction_receipt["effectiveGasPrice"]
             transfer_info["gas_price_gwei"] = transaction_receipt["effectiveGasPrice"] / 1.0E9
+            # Human-readable gas cost in Gwei.
             transfer_info["human_gas_cost"] = transfer_info["gas_used"] * transfer_info["gas_price"] / 1.0E18
 
     if transfer_info:
