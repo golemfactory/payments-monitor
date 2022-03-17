@@ -1,0 +1,17 @@
+billiard
+psycopg2
+requests
+celery
+django_celery_beat
+celery[redis]
+redis
+gunicorn
+django
+djangorestframework
+markdown
+django-filter
+django-cors-headers
+aioredis==2.0.0a1
+daphne
+aiohttp
+web3

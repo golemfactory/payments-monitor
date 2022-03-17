@@ -1,0 +1,6 @@
+DB_HOST=postgres
+DB_PORT=5432
+DB_PASSWORD=changeme
+DB_USER=changeme
+DATABASE=changeme
+DJANGO_SECRET=generateme

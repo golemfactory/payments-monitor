@@ -1,0 +1,8 @@
+*DS_STORE
+.envs
+*.pyc
+celerybeat-schedule
+*.log
+monitor-backend/static/admin/*
+monitor-backend/static/rest_framework/*
+celerybeat-schedule.db

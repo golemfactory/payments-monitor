@@ -1,0 +1,143 @@
+version: "3.8"
+volumes:
+  db_data: {}
+services:
+  traefik:
+    image: traefik:latest
+    ports:
+      - "80:80"
+      - "443:443"
+      - "90:90"
+      - "85:85"
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.swarmmode=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.webinternal.address=:85"
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.internal.address=:90"
+      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencryptresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencryptresolver.acme.email=phillip@golem.network"
+      - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+      - --metrics.prometheus.entryPoint=metrics
+      - --entryPoints.metrics.address=:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=swarm-example"
+      - "traefik.http.routers.traefik.middlewares=traefik-compress"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - swarm-example
+  webserver:
+    image: phillipjensen/payment-monitor-backend:latest
+    env_file:
+      - ./.envs/.django
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.webserver.rule=Host(`proxy.monitor.golem.network`)
+        - traefik.http.routers.webserver.entrypoints=web
+        - traefik.http.services.webserver.loadbalancer.server.port=8002
+        - traefik.http.routers.webserver.service=webserver@docker
+        - traefik.docker.network=swarm-example
+        - traefik.http.routers.webserver.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.webserver-web-secure.rule=Host(`proxy.monitor.golem.network`)
+        - traefik.http.routers.webserver-web-secure.tls=true
+        - traefik.http.routers.webserver-web-secure.entrypoints=web-secure
+        - traefik.http.middlewares.webserver_compress.compress=true
+        - traefik.http.routers.webserver-web-secure.middlewares=webserver_compress
+        - traefik.http.routers.webserver.middlewares=webserver_compress
+      replicas: 10
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  redis:
+    image: "redis:alpine"
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
+    expose:
+      - "6379"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  celery:
+    image: phillipjensen/payment-monitor-backend-celery:latest
+    env_file:
+      - ./.envs/.django
+      - ./.envs/.alertconfig
+    deploy:
+      replicas: 5
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  celery_beat:
+    image: phillipjensen/payment-monitor-backend-celery-beat:latest
+    command: celery -A core beat -l INFO
+    env_file:
+      - ./.envs/.django
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  postgres:
+    image: postgres:13.4-alpine
+    env_file:
+      - ./.envs/.db
+    volumes:
+      - "db_data:/var/lib/postgresql/data"
+    networks:
+      - swarm-example
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+networks:
+  swarm-example:
+    driver: overlay
