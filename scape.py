@@ -1,15 +1,55 @@
+import web3.exceptions
 from web3 import Web3
+#from web3.logs import IGNORE
+import json
 
-w3 = Web3(Web3.HTTPProvider("https://polygon-rpc.com/"))
-test = w3.eth.get_transaction(
-    '0x37cbeae723401a4b79ea80ff35e2872d8d780081372ab84c3a8f73135e241c2e')
+def get_erc20_transaction_details(token_contract, tx_id):
+    transfer_info = {}
+    try:
+        transaction_info = w3.eth.getTransaction(tx_id)
+    except web3.exceptions.TransactionNotFound:
+        raise Exception(f"Transaction not found on chain: {tx_id}")
 
-abidata = [{"constant": True, "inputs": [], "name":"name", "outputs":[{"name": "", "type": "string"}], "payable": False, "stateMutability": "view", "type": "function"}, {"constant": False, "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "approve", "outputs": [{"name": "", "type": "bool"}], "payable": False, "stateMutability": "nonpayable", "type": "function"}, {"constant": True, "inputs": [], "name":"totalSupply", "outputs":[{"name": "", "type": "uint256"}], "payable": False, "stateMutability": "view", "type": "function"}, {"constant": False, "inputs": [{"name": "_from", "type": "address"}, {"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "transferFrom", "outputs": [{"name": "", "type": "bool"}], "payable": False, "stateMutability": "nonpayable", "type": "function"}, {"constant": True, "inputs": [], "name":"decimals", "outputs":[{"name": "", "type": "uint8"}], "payable": False, "stateMutability": "view", "type": "function"}, {"constant": True, "inputs": [{"name": "_owner", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "balance", "type": "uint256"}], "payable": False, "stateMutability": "view",
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   "type": "function"}, {"constant": True, "inputs": [], "name":"symbol", "outputs":[{"name": "", "type": "string"}], "payable": False, "stateMutability": "view", "type": "function"}, {"constant": False, "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "transfer", "outputs": [{"name": "", "type": "bool"}], "payable": False, "stateMutability": "nonpayable", "type": "function"}, {"constant": True, "inputs": [{"name": "_owner", "type": "address"}, {"name": "_spender", "type": "address"}], "name": "allowance", "outputs": [{"name": "", "type": "uint256"}], "payable": False, "stateMutability": "view", "type": "function"}, {"payable": True, "stateMutability": "payable", "type": "fallback"}, {"anonymous": False, "inputs": [{"indexed": True, "name": "owner", "type": "address"}, {"indexed": True, "name": "spender", "type": "address"}, {"indexed": False, "name": "value", "type": "uint256"}], "name": "Approval", "type": "event"}, {"anonymous": False, "inputs": [{"indexed": True, "name": "from", "type": "address"}, {"indexed": True, "name": "to", "type": "address"}, {"indexed": False, "name": "value", "type": "uint256"}], "name": "Transfer", "type": "event"}]
+    if transaction_info.to.lower() != token_contract.address.lower():
+        raise Exception(f"Seems like transaction is not with expected token: {transaction_info.to} vs {token_contract.address}")
 
-myContract = w3.eth.contract(
-    address="0x0B220b82F3eA3B7F6d9A1D8ab58930C064A2b5Bf", abi=abidata)
-tx_hash = myContract.functions.Transfer().transact()
-receipt = w3.eth.getTransactionReceipt(tx_hash)
-logs = myContract.events.myEvent().processReceipt(receipt)
-print(receipt)
+    try:
+        transaction_receipt = w3.eth.getTransactionReceipt(tx_id)
+    except web3.exceptions.TransactionNotFound:
+        raise Exception(f"Transaction receipt not found on chain: {tx_id}")
+
+    if transaction_receipt["status"] != 1:
+        raise Exception(f"Transaction receipt status not equal to 1: {tx_id}")
+
+    try:
+        logs = token_contract.events.Transfer().processReceipt(transaction_receipt, web3.logs.IGNORE)
+    except Exception as ex:
+        raise Exception(f"Failed to process receipt {tx_id}: {ex}")
+
+    for log in logs:
+        if "event" in log and log.event == "Transfer":
+            transfer_info["from"] = log["args"]["from"]
+            transfer_info["to"] = log["args"]["to"]
+            transfer_info["value"] = log["args"]["value"]
+            transfer_info["human_value"] = transfer_info["value"] / 1.0E18
+            transfer_info["gas_used"] = transaction_receipt["gasUsed"]
+            transfer_info["gas_price"] = transaction_receipt["effectiveGasPrice"]
+            transfer_info["gas_price_gwei"] = transaction_receipt["effectiveGasPrice"] / 1.0E9
+            transfer_info["human_gas_cost"] = transfer_info["gas_used"] * transfer_info["gas_price"] / 1.0E18
+
+    if transfer_info:
+        print(f"Transaction parsed successfully: {transfer_info}")
+        return transfer_info
+
+    print(f"Failed to get transaction info due to uknown problem: {tx_id}")
+    return None
+
+
+if __name__ == "__main__":
+    w3 = Web3(Web3.HTTPProvider("https://polygon-rpc.com/"))
+    glm_token_address = "0x0B220b82F3eA3B7F6d9A1D8ab58930C064A2b5Bf"
+    with open("IERC20.abi.json", "r") as abi_file:
+        erc20abi = json.loads(abi_file.read())
+    glm_contract = w3.eth.contract(address=glm_token_address, abi=erc20abi)
+    get_erc20_transaction_details(glm_contract, "0x1ac8a969f318f85086c8ed7ea66c8314d1f730570833f1d4336cd1abaadc314d")
+    get_erc20_transaction_details(glm_contract, "0x1ac8a969f318f85086c8ed7ea66c8314d1f730570833f1d4336cd1abaadc314d")
