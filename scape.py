@@ -54,5 +54,6 @@ if __name__ == "__main__":
     with open("IERC20.abi.json", "r") as abi_file:
         erc20abi = json.loads(abi_file.read())
     glm_contract = w3.eth.contract(address=glm_token_address, abi=erc20abi)
-    get_erc20_transaction_details(glm_contract, "0x1ac8a969f318f85086c8ed7ea66c8314d1f730570833f1d4336cd1abaadc314d")
-    get_erc20_transaction_details(glm_contract, "0x1ac8a969f318f85086c8ed7ea66c8314d1f730570833f1d4336cd1abaadc314d")
+    transaction_details = get_erc20_transaction_details(glm_contract, "0x1ac8a969f318f85086c8ed7ea66c8314d1f730570833f1d4336cd1abaadc314d")
+
+    print(f'ERC20 transfer:\n Transferred: {transaction_details["human_value"]:.6f}GLM\n Gas paid: {transaction_details["human_gas_cost"]:.6f}MATIC\n Gas price {transaction_details["gas_price_gwei"]:.2f}Gwei')
