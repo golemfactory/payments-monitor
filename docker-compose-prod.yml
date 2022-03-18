@@ -56,19 +56,19 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.webserver.rule=Host(`proxy.monitor.golem.network`)
+        - traefik.http.routers.webserver.rule=Host(`api.pmonitor.golem.network`)
         - traefik.http.routers.webserver.entrypoints=web
         - traefik.http.services.webserver.loadbalancer.server.port=8002
         - traefik.http.routers.webserver.service=webserver@docker
         - traefik.docker.network=swarm-example
         - traefik.http.routers.webserver.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.webserver-web-secure.rule=Host(`proxy.monitor.golem.network`)
+        - traefik.http.routers.webserver-web-secure.rule=Host(`api.pmonitor.golem.network`)
         - traefik.http.routers.webserver-web-secure.tls=true
         - traefik.http.routers.webserver-web-secure.entrypoints=web-secure
         - traefik.http.middlewares.webserver_compress.compress=true
         - traefik.http.routers.webserver-web-secure.middlewares=webserver_compress
         - traefik.http.routers.webserver.middlewares=webserver_compress
-      replicas: 10
+      replicas: 3
       update_config:
         parallelism: 2
         failure_action: rollback
@@ -98,7 +98,7 @@ services:
       - ./.envs/.django
       - ./.envs/.alertconfig
     deploy:
-      replicas: 5
+      replicas: 3
       update_config:
         parallelism: 1
         failure_action: rollback
