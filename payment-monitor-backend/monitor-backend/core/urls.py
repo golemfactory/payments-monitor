@@ -20,7 +20,8 @@ from django.conf.urls.static import static
 from authentication.views import signup
 
 urlpatterns = [
-    path('', include('api.urls')),
+    path('v1/', include('api.urls')),
+    path('dashboard/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path("accounts/signup", signup, name="register")

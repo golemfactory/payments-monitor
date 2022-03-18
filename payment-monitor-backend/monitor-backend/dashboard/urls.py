@@ -3,8 +3,8 @@ from django.shortcuts import render
 from . import views
 
 
-app_name = 'api'
+app_name = 'dashboard'
 
 urlpatterns = [
-    path('payment', views.process_payment),
+    path('', views.dashboard, name="dashboard"),
 ]

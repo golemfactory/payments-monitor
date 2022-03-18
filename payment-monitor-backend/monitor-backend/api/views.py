@@ -3,8 +3,6 @@ import json
 import requests
 from .models import Payment
 from .tasks import check_tx_status
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
 
 async def process_payment(request):
@@ -18,9 +16,3 @@ async def process_payment(request):
         return HttpResponse(status=200)
     else:
         return HttpResponse(status=400)
-
-
-@login_required
-def dashboard(request):
-    payments = Payment.objects.filter(user=request.user)
-    return render(request, "dashboard.html", {'payments': payments})
