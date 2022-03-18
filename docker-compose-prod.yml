@@ -79,8 +79,6 @@ services:
       - swarm-example
   nginx:
     image: phillipjensen/payment-monitor-nginx:latest
-    volumes:
-      - ./payment-monitor-backend/monitor-backend/staticfiles:/static
     deploy:
       labels:
         - traefik.enable=true
