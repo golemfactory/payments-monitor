@@ -64,7 +64,7 @@ services:
     networks:
       - swarm-example
   nginx:
-    image: phillipjensen/payments-nginx:latest
+    image: phillipjensen/payment-monitor-nginx:latest
     deploy:
       labels:
         - traefik.enable=true
