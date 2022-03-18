@@ -118,7 +118,6 @@ services:
       - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
     env_file:
       - ./.envs/.django
-      - ./.envs/.alertconfig
     deploy:
       replicas: 1
       update_config:
