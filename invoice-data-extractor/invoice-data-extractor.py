@@ -1,4 +1,9 @@
 import sqlalchemy as db
+import logging
+
+logging.basicConfig(level="DEBUG")
+
+log = logging.getLogger("INVOICE-EXTRACTOR")
 
 def single_to_dict(result_set):
     return dict(zip(result_set[0].keys(), result_set[0]))
@@ -72,12 +77,15 @@ if __name__ == "__main__":
 
     invoices = get_first_n_invoices(pay_invoice_table, 10)
     for invoice in invoices:
-        print(f"Checking invoice {invoice['id']}")
+        log.debug(f"Checking invoice {invoice['id']}")
         pay_order = get_pay_order_from_invoice(pay_order_table, invoice["id"])
         if not pay_order:
-            print(f"Pay order for {invoice['id']} not found")
+            log.debug(f"Pay order for {invoice['id']} not found")
+
         else:
-            print(pay_order)
+            log.debug(pay_order)
+            if pay_order["driver"] == "erc20":
+                log.debug(f"Checking payment for {invoice['id']} and order {pay_order['id']}")
 
 
 
