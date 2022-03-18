@@ -31,7 +31,7 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['api.localhost', 'localhost']
+ALLOWED_HOSTS = ['api.localhost']
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 

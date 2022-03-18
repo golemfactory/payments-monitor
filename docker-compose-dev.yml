@@ -80,7 +80,7 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.webserver.rule=Host(`localhost`)
+        - traefik.http.routers.webserver.rule=Host(`api.localhost`)
         - traefik.http.routers.webserver.entrypoints=web
         - traefik.http.services.webserver.loadbalancer.server.port=8002
         - traefik.http.routers.webserver.service=webserver@docker
@@ -113,7 +113,7 @@ services:
     build:
       context: payment-monitor-backend/.
       dockerfile: dockerfiles/Celery
-    image: payment-celery:latestdo
+    image: payment-celery:latest
     volumes:
       - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
     env_file:
