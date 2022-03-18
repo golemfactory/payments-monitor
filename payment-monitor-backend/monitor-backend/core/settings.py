@@ -31,7 +31,8 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['api.localhost']
+ALLOWED_HOSTS = ['localhost',
+                 'pmonitor.golem.network', 'api.pmonitor.golem.network']
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
@@ -182,4 +183,4 @@ result_backend = 'redis://redis:6379/0'
 STATIC_ROOT = './static/'
 MEDIA_ROOT = './var/media/'
 MEDIA_URL = '/media/'
-STATIC_URL = '/staticfiles/'
+STATIC_URL = '/static/'

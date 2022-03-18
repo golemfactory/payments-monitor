@@ -49,28 +49,40 @@ services:
           - node.role == manager
     networks:
       - swarm-example
-  webserver:
+  django:
     image: phillipjensen/payment-monitor-backend:latest
     env_file:
       - ./.envs/.django
     deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.webserver.rule=Host(`api.pmonitor.golem.network`)
-        - traefik.http.routers.webserver.entrypoints=web
-        - traefik.http.services.webserver.loadbalancer.server.port=8002
-        - traefik.http.routers.webserver.service=webserver@docker
-        - traefik.docker.network=swarm-example
-        - traefik.http.routers.webserver.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.webserver-web-secure.rule=Host(`api.pmonitor.golem.network`)
-        - traefik.http.routers.webserver-web-secure.tls=true
-        - traefik.http.routers.webserver-web-secure.entrypoints=web-secure
-        - traefik.http.middlewares.webserver_compress.compress=true
-        - traefik.http.routers.webserver-web-secure.middlewares=webserver_compress
-        - traefik.http.routers.webserver.middlewares=webserver_compress
       replicas: 3
       update_config:
         parallelism: 2
+        failure_action: rollback
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  nginx:
+    image: phillipjensen/payments-nginx:latest
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.nginx.rule=Host(`pmonitor.golem.network`)
+        - traefik.http.routers.nginx.entrypoints=web
+        - traefik.http.services.nginx.loadbalancer.server.port=8002
+        - traefik.http.routers.nginx.service=nginx@docker
+        - traefik.docker.network=swarm-example
+        - traefik.http.routers.nginx.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.nginx-web-secure.rule=Host(`pmonitor.golem.network`)
+        - traefik.http.routers.nginx-web-secure.tls=true
+        - traefik.http.routers.nginx-web-secure.entrypoints=web-secure
+        - traefik.http.middlewares.nginx_compress.compress=true
+        - traefik.http.routers.nginx-web-secure.middlewares=nginx_compress
+        - traefik.http.routers.nginx.middlewares=nginx_compress
+      replicas: 3
+      update_config:
+        parallelism: 1
         failure_action: rollback
         delay: 2s
       restart_policy:
