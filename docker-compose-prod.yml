@@ -96,7 +96,6 @@ services:
     image: phillipjensen/payment-monitor-backend-celery:latest
     env_file:
       - ./.envs/.django
-      - ./.envs/.alertconfig
     deploy:
       replicas: 3
       update_config:
