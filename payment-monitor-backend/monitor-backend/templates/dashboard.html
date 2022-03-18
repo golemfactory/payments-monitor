@@ -1,10 +1,41 @@
 
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'basic.css' %}">
 
   </head>
   <body>
+    <table>
+      <tr>
+        <th>Tx</th>
+        <th>Status</th>
+        <th>Sender</th>
+        <th>Recipient</th>
+        <th>GLM</th> 
+        <th>Matic </th> 
+        <th>Gas used </th> 
+        <th>Gas Price </th> 
+        <th>Gas Price Gwei </th> 
+      </tr>
+      <tr>
+      {% for payment in payments %}
+          <td>{{payment.tx}}</td>
+          <td>{{payment.status}}</td>
+          <td>{{payment.sender}}</td>
+          <td>{{payment.recipient}}</td>
+          <td>{{payment.glm}}</td>
+          <td>{{payment.matic}}</td>
+          <td>{{payment.gasUsed}}</td>
+          <td>{{payment.gasPrice}}</td>
+          <td>{{payment.gasPriceGwei}}</td>
+      {% endfor %}
 
+  
+      </tr>
+
+   </table>
   </body>
 </html>
