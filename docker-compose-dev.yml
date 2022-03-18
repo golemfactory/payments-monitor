@@ -78,13 +78,13 @@ services:
     env_file:
       - ./.envs/.django
     deploy:
-      # labels:
-      #   - traefik.enable=true
-      #   - traefik.http.routers.django.rule=Host(`api.localhost`)
-      #   - traefik.http.routers.django.entrypoints=web
-      #   - traefik.http.services.django.loadbalancer.server.port=8002
-      #   - traefik.http.routers.django.service=webserver@docker
-      #   - traefik.docker.network=swarm-example
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.django.rule=Host(`api.localhost`)
+        - traefik.http.routers.django.entrypoints=web
+        - traefik.http.services.django.loadbalancer.server.port=8002
+        - traefik.http.routers.django.service=django@docker
+        - traefik.docker.network=swarm-example
       replicas: 1
       update_config:
         parallelism: 1
