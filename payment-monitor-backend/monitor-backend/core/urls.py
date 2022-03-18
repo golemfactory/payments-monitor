@@ -15,9 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
+from django.conf import settings
+from django.conf.urls.static import static
+from authentication.views import signup
 
 urlpatterns = [
-    path('v1/', include('api.urls')),
+    path('', include('api.urls')),
     path('admin/', admin.site.urls),
-]
+    path('accounts/', include('django.contrib.auth.urls')),
+    path("accounts/signup", signup, name="register")
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

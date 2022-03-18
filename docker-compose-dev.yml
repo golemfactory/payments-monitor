@@ -100,7 +100,7 @@ services:
       dockerfile: payment-monitor-backend/dockerfiles/Nginx
     image: payments-nginx:latest
     volumes:
-      - ./payment-monitor-backend/monitor-backend/static:/static
+      - ./payment-monitor-backend/monitor-backend/staticfiles:/static
     deploy:
       labels:
         - traefik.enable=true
