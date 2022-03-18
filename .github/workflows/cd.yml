@@ -1,0 +1,38 @@
+#Location: .github/workflows/custom_config.yml
+
+name: Build and push containers to Dockerhub
+env:
+  DOCKER_USER: ${{ secrets.DOCKER_USER }}
+  DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone on our repo
+        uses: actions/checkout@v2
+
+      - name: Login to Dockerhub
+        run: make login
+
+      - name: Build Containers
+        run: make build-amd64
+
+      - name: Push Containers
+        run: make push-amd64
+
+      - name: SSH deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd proxy-monitor && git pull https://${{ secrets.PAT }}@github.com/Thorg-Dev/proxy-monitor
+            docker-compose -f docker-compose-prod.yml pull
+            docker stack deploy -c docker-compose-prod.yml monitor
