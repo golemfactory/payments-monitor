@@ -3,8 +3,10 @@ import json
 import requests
 from .models import Payment
 from .tasks import check_tx_status
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 async def process_payment(request):
     """
     Endpoint to receive payment info and send it to the celery workers for checking.
