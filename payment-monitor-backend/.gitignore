@@ -4,7 +4,5 @@
 celerybeat-schedule
 *.log
 monitor-backend/static/admin/*
-monitor-backend/staticfiles/admin/*
 monitor-backend/static/rest_framework/*
-monitor-backend/staticfiles/rest_framework/*
 celerybeat-schedule.db
