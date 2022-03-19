@@ -34,7 +34,7 @@ if SECRET_KEY == None:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost',
+ALLOWED_HOSTS = ['localhost', 'api.localhost',
                  'pmonitor.golem.network', 'api.pmonitor.golem.network']
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
