@@ -9,8 +9,8 @@ class User(AbstractUser):
 
 
 class Payment(models.Model):
-    tx = models.CharField(max_length=70)
-    status = models.CharField(max_length=10)
+    tx = models.CharField(max_length=70, unique=True)
+    status = models.CharField(max_length=35)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     sender = models.CharField(max_length=42, null=True, default=None)
     recipient = models.CharField(max_length=42, null=True, default=None)
@@ -19,3 +19,5 @@ class Payment(models.Model):
     gasUsed = models.BigIntegerField(null=True, default=None)
     gasPrice = models.BigIntegerField(null=True, default=None)
     gasPriceGwei = models.FloatField(null=True, default=None)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

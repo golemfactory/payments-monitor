@@ -9,9 +9,21 @@
   <body>
 <div class="px-4 sm:px-6 lg:px-8 mt-10">
   <div class="sm:flex sm:items-center">
-    <div class="sm:flex-auto">
+    <div class="grid grid-cols-12 gap-10">
+    <div class="sm:flex-auto col-span-12">
       <h1 class="text-xl font-semibold text-gray-900">API key</h1>
       <p class="mt-2 text-sm text-gray-700">{{apikey}}</p>
+    </div>
+
+    
+      <div class="col-span-4">
+        <p class="text-lg font-bold">Total GLM Spent</p>
+        <span class="text-sm text-gray-700">{{glm_spent}}</span>
+      </div>
+      <div class="col-span-4">
+        <p class="text-lg font-bold">Total MATIC Spent</p>
+        <span class="text-sm text-gray-700">{{matic_spent}}</span>
+      </div>
     </div>
 
   </div>
@@ -35,8 +47,9 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
+              {% for payment in payments %}
               <tr>
-                {% for payment in payments %}
+                
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.tx}}</td>
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.status}}</td>
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.sender}}</td>
@@ -46,9 +59,9 @@
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.gasUsed}}</td>
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.gasPrice}}</td>
                 <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{{payment.gasPriceGwei}}</td>
-            {% endfor %}
+            
               </tr>
-
+              {% endfor %}
               <!-- More people... -->
             </tbody>
           </table>
