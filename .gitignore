@@ -1,3 +1,4 @@
 .DS_Store
 .envs/.db
 .envs/.django
+payment-frontend

@@ -21,7 +21,7 @@ from authentication.views import signup
 
 urlpatterns = [
     path('v1/', include('api.urls')),
-    path('dashboard/', include('dashboard.urls')),
+    path('', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path("accounts/signup", signup, name="register")
