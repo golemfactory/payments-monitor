@@ -5,11 +5,14 @@ logging.basicConfig(level="INFO")
 
 log = logging.getLogger("INVOICE-EXTRACTOR")
 
+
 def single_to_dict(result_set):
     return dict(zip(result_set[0].keys(), result_set[0]))
 
+
 def multiple_to_dicts(result_set):
     return [dict(zip(row.keys(), row)) for row in result_set]
+
 
 def get_transaction_by_tx_id(connection, erc20_transaction_table, tx_id):
     query = db.select([erc20_transaction_table]).where(erc20_transaction_table.c.tx_id == tx_id)
@@ -23,6 +26,7 @@ def get_transaction_by_tx_id(connection, erc20_transaction_table, tx_id):
         raise Exception(f"Multiple transactions with the same id: {tx_id}")
 
     return single_to_dict(result_set)
+
 
 def get_payment_from_order_id(connection, erc20_payment_table, order_id):
     query = db.select([erc20_payment_table]).where(erc20_payment_table.c.order_id == order_id)
@@ -52,7 +56,6 @@ def get_pay_order_from_invoice(connection, pay_order_table, invoice_id):
     return single_to_dict(result_set)
 
 
-
 def get_invoice_by_id(connection, pay_invoice_table, invoice_id):
     query = db.select([pay_invoice_table]).where(pay_invoice_table.c.id == invoice_id)
     result_proxy = connection.execute(query)
@@ -63,6 +66,7 @@ def get_invoice_by_id(connection, pay_invoice_table, invoice_id):
         raise Exception(f"Multiple invoices with same id found: {invoice_id}")
 
     return single_to_dict(result_set)
+
 
 def get_first_n_invoices(connection, pay_invoice_table, first_n_invoices):
     query = db.select([pay_invoice_table]).order_by(pay_invoice_table.c.timestamp.asc()).limit(first_n_invoices)
@@ -139,10 +143,7 @@ def main():
     erc20_payment_table = db.Table('payment', metadata_driver, autoload=True, autoload_with=engine_driver)
     erc20_transaction_table = db.Table('transaction', metadata_driver, autoload=True, autoload_with=engine_driver)
 
-
-
     print(pay_invoice_table.c)
-
 
     #print(get_invoice_by_id(pay_invoice_table, "4e537bb4-c3d0-4d58-a4d6-d265892087d5"))
 
@@ -150,12 +151,6 @@ def main():
     for invoice in invoices:
         status = get_invoice_payment_status(connection_payment, connection_driver, pay_order_table, erc20_payment_table, erc20_transaction_table, invoice)
         print(status)
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
