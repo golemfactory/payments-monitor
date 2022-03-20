@@ -28,7 +28,7 @@ build-amd64:
 	@docker tag ${IMG_DJANGO} ${LATEST_DJANGO}
 	@docker tag ${IMG_CELERY} ${LATEST_CELERY}
 	@docker tag ${IMG_CELERY_BEAT} ${LATEST_CELERY_BEAT}
-	@docker tag ${IMG_NGINX} ${NGINX_BEAT}
+	@docker tag ${IMG_NGINX} ${LATEST_NGINX}
 
 	@docker tag ${DJANGO_LATEST_LOCAL} ${DJANGO}:latest
 	@docker tag ${CELERY_LATEST_LOCAL} ${CELERY}:latest
