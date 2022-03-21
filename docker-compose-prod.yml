@@ -77,6 +77,32 @@ services:
         condition: on-failure
     networks:
       - swarm-example
+  fastapi:
+    image: ghcr.io/golemfactory/moleculebackend:latest
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.fastapi.rule=Host(`mol.test.golem.network`)
+        - traefik.http.routers.fastapi.entrypoints=web
+        - traefik.http.services.fastapi.loadbalancer.server.port=8002
+        - traefik.http.routers.fastapi.service=fastapi@docker
+        - traefik.docker.network=swarm-example
+        - traefik.http.routers.fastapi.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.fastapi-web-secure.rule=Host(`mol.test.golem.network`)
+        - traefik.http.routers.fastapi-web-secure.tls=true
+        - traefik.http.routers.fastapi-web-secure.entrypoints=web-secure
+        - traefik.http.middlewares.fastapi_compress.compress=true
+        - traefik.http.routers.fastapi-web-secure.middlewares=fastapi_compress
+        - traefik.http.routers.fastapi.middlewares=fastapi_compress
+      replicas: 3
+      update_config:
+        parallelism: 2
+        failure_action: rollback
+        delay: 2s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
   nginx:
     image: phillipjensen/payment-monitor-nginx:latest
     deploy:

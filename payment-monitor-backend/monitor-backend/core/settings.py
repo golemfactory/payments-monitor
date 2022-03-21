@@ -32,9 +32,9 @@ else:
 if SECRET_KEY == None:
     SECRET_KEY = "testing"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'api.localhost',
+ALLOWED_HOSTS = ['api.localhost', 'localhost',
                  'pmonitor.golem.network', 'api.pmonitor.golem.network']
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -45,6 +45,7 @@ TIME_ZONE = 'Europe/Copenhagen'
 
 AUTH_USER_MODEL = 'api.User'
 # Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -106,14 +107,21 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.environ.get("DB_NAME"),
+#         'USER': os.environ.get("DB_USER"),
+#         'PASSWORD': os.environ.get("DB_PASSWORD"),
+#         'HOST': os.environ.get("DB_HOST"),
+#         'PORT': os.environ.get("DB_PORT"),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("DB_NAME"),
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),
-        'PORT': os.environ.get("DB_PORT"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
     }
 }
 
