@@ -21,3 +21,36 @@ class Payment(models.Model):
     gasPriceGwei = models.FloatField(null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=64)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class RequestorNode(models.Model):
+    walletAddress = models.CharField(max_length=42)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+
+class Provider(models.Model):
+    walletAddress = models.CharField(max_length=42)
+    name = models.CharField(max_length=128)
+
+
+class ProviderNode(models.Model):
+    providerId = models.CharField(max_length=42)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
+
+
+class Activity(models.Model):
+    providerNode = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
+    requestorNode = models.ForeignKey(RequestorNode, on_delete=models.CASCADE)
+    jobName = models.CharField(max_length=64)
+    jobQuantity = models.FloatField()
+    jobUnit = models.CharField(max_length=64)
+    cpuTime = models.FloatField()
+    jobCost = models.FloatField()
+    payment = models.ForeignKey(
+        Payment, null=True, blank=True, on_delete=models.CASCADE)
+    taskStatus = models.CharField(max_length=64)

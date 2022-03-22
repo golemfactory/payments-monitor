@@ -2,3 +2,4 @@
 .envs/.db
 .envs/.django
 payment-frontend
+payment-monitor-backend/monitor-backend/db.sqlite3
