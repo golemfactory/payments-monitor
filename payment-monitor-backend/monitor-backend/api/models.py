@@ -21,3 +21,47 @@ class Payment(models.Model):
     gasPriceGwei = models.FloatField(null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+user_life_on_golem
+user_chess_on_golem
+user_both
+
+
+life on golem 1
+chess on golem
+
+
+class Project
+    id
+    name
+
+
+RequestorNode
+    address
+    project
+
+
+
+#dont need to be separate info for now but maybe we want to make some annotations
+Provider
+   address
+   comment
+
+
+ProviderNode
+   id 
+   provider
+   info_about_pc
+   
+Activity:
+    providerNode
+    requestorNode
+    "job_name": "test_fixing_primes",
+    "job_quantity": 10.0,
+    "job_unit": "primes",
+    "job_time": 5.613140096618357,
+    "cpu_time": 2.0531400966183577,
+    "job_cost": 25.214028985507248,
+    payment// it could be null
+    task_status
