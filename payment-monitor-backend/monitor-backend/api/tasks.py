@@ -7,7 +7,7 @@ import requests
 from datetime import datetime
 import os
 import time
-from .models import Payment, User
+from api.models.models import Payment, User
 from .utils import get_erc20_transaction_details
 from web3 import Web3
 

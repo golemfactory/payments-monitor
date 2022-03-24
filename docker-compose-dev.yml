@@ -5,34 +5,34 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
 services:
-  # pgadmin:
-  #   image: dpage/pgadmin4
-  #   links:
-  #     - postgres
-  #   depends_on:
-  #     - postgres
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: 123@123.com
-  #     PGADMIN_DEFAULT_PASSWORD: 123
-  #   volumes:
-  #     - pgadmin:/var/lib/pgadmin
-  #   deploy:
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)
-  #       - traefik.http.routers.pgadmin.entrypoints=web
-  #       - traefik.http.services.pgadmin.loadbalancer.server.port=80
-  #       - traefik.http.routers.pgadmin.service=pgadmin@docker
-  #       - traefik.docker.network=swarm-example
-  #     replicas: 1
-  #     update_config:
-  #       parallelism: 1
-  #       failure_action: rollback
-  #       delay: 10s
-  #     restart_policy:
-  #       condition: on-failure
-  #   networks:
-  #     - swarm-example
+  pgadmin:
+    image: dpage/pgadmin4
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 123@123.com
+      PGADMIN_DEFAULT_PASSWORD: 123
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)
+        - traefik.http.routers.pgadmin.entrypoints=web
+        - traefik.http.services.pgadmin.loadbalancer.server.port=80
+        - traefik.http.routers.pgadmin.service=pgadmin@docker
+        - traefik.docker.network=swarm-example
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
   traefik:
     image: traefik:latest
     ports:
@@ -94,6 +94,27 @@ services:
         condition: on-failure
     networks:
       - swarm-example
+  # fastapi:
+  #   image: fastapi:latest
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.fastapi.rule=Host(`api.localhost`)
+  #       - traefik.http.routers.fastapi.entrypoints=web
+  #       - "traefik.http.middlewares.fastapi-prefix.stripprefix.prefixes=/fastapi"
+  #       - "traefik.http.routers.fastapi.middlewares=fastapi-prefix"
+  #       - traefik.http.services.fastapi.loadbalancer.server.port=80
+  #       - traefik.http.routers.fastapi.service=fastapi@docker
+  #       - traefik.docker.network=swarm-example
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
   nginx:
     build:
       context: .
