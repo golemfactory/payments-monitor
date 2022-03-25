@@ -200,6 +200,8 @@ services:
       - "db_data:/var/lib/postgresql/data"
     networks:
       - swarm-example
+    ports:
+      - "5432:5432"
     deploy:
       replicas: 1
       update_config:
