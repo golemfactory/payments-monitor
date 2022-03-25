@@ -38,18 +38,45 @@ class Agreement(models.Model):
 
 
 class Payment(models.Model):
-    tx = models.CharField(max_length=70, unique=True)
-    status = models.CharField(max_length=35)
+    # unique triple, these three values have to be unique on Ethereum based chain
+    network = models.IntegerField(),
+    nonce = models.BigIntegerField(),
     sender = models.CharField(max_length=42, null=True, default=None)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['network', 'nonce', 'sender'], name='primary_transaction_triple')
+        ]
+
+    # reported specifically by yagna
+    yagnaTimeCreated = models.DateTimeField(),
+    yagnaTimeLastAction = models.DateTimeField(),
+    yagnaTimeSent = models.DateTimeField(),
+    yagnaTimeConfirmed = models.DateTimeField(),
+    yagnaStartingGasPrice = models.CharField(max_length=128, null=True, default=None)
+    yagnaMaximumGasPrice = models.CharField(max_length=128, null=True, default=None)
+    yagnaStatus = models.IntegerField()
+
+    # final transaction hash if payment successful
+    finalTx = models.CharField(max_length=70, unique=True)
+
+    # public data reported by yagna, but also possible to be confirmed on chain
     recipient = models.CharField(max_length=42, null=True, default=None)
-    glm = models.FloatField(null=True, default=None)
-    matic = models.FloatField(null=True, default=None)
-    gasUsed = models.BigIntegerField(null=True, default=None)
-    gasPrice = models.BigIntegerField(null=True, default=None)
+    gasUsed = models.IntegerField()
+    gasLimit = models.IntegerField()
+    gasPrice = models.CharField(max_length=128, null=True, default=None)
+
+    # not needed for convenience only
+    amountHuman = models.FloatField(null=True, default=None)
+    gasSpentHuman = models.FloatField(null=True, default=None)
     gasPriceGwei = models.FloatField(null=True, default=None)
+
+    # internal
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
 
 
 class Invoice(models.Model):
