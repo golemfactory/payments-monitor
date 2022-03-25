@@ -1,8 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 import json
 import requests
-from api.models.models import Payment, Agreement, ProviderNode, Project, Provider, RequestorNode, Activity
-from api.models.models2 import Invoice
+from api.models.models import Payment, Invoice, Agreement, ProviderNode, Project, Provider, RequestorNode, Activity
 from .tasks import check_tx_status
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync, sync_to_async
@@ -38,7 +37,7 @@ def agreement_endpoint(request):
             providerObj.save()
         providerNodeObj, providerNodeObjcreated = ProviderNode.objects.get_or_create(
             provider_id=data['provider']['provider_id'], subnet=data['provider']['subnet'], project=project, linked_provider=providerObj)
-        Agreement.objects.create(
+        Agreement.objects.get_or_create(
             agreement_id=data['agreement_id'], project=project, providernode=providerNodeObj)
         return HttpResponse(status=201)
     elif request.method == 'GET':
@@ -60,7 +59,7 @@ def invoice_endpoint(request):
         project = Project.objects.get(apikey=data['apikey'])
         agreement = Agreement.objects.get(agreement_id=data['agreement_id'])
         if "payment" in data:
-            payment = Payment.objects.create(project=project, tx=data['payment']['tx'], status=data['payment']['status'], sender=data['payment']['sender'], recipient=data['payment']['recipient'],  glm=data[
+            payment = Payment.objects.create(project=project, tx=data['payment']['tx_id'], status=data['payment']['status'], sender=data['payment']['sender'], recipient=data['payment']['recipient'],  glm=data[
                                              'payment']['glm'], matic=data['payment']['matic'], gasUsed=data['payment']['gas_used'], gasPrice=data['payment']['gas_price'], gasPriceGwei=data['payment']['gas_price_gwei'])
             invoice = Invoice.objects.create(amount=data['amount'], invoice_id=data['invoice_id'],
                                              issuer_id=data['issuer_id'], payment_platform=data['payment_platform'], agreement=agreement, project=project, linked_payment=payment)
@@ -74,7 +73,7 @@ def invoice_endpoint(request):
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
         invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-        payment = Payment.objects.get(tx=data['tx'])
+        payment = Payment.objects.get(tx=data['tx_id'])
         payment.linked_invoice = invoice
         payment.save()
         invoice.linked_payment = payment
@@ -84,28 +83,29 @@ def invoice_endpoint(request):
 
 @csrf_exempt
 def payment_endpoint(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
-        payment = Payment.objects.create(project=project, tx=data['tx'], status=data['status'], sender=data['sender'], recipient=data['recipient'],
-                                         glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'], gasPrice=data['gas_price'], gasPriceGwei=['gas_price_gwei'])
-        if "invoice_id" in data:
+    if 0:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            project = Project.objects.get(apikey=data['apikey'])
+            payment = Payment.objects.create(project=project, tx=data['tx_id'], status=data['status'], sender=data['sender'], recipient=data['recipient'],
+                                             glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'], gasPrice=data['gas_price'], gasPriceGwei=['gas_price_gwei'])
+            if "invoice_id" in data:
+                invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
+                payment = Payment.objects.create(project=project, tx=data['tx_id'], status=data['status'], sender=data['sender'], recipient=data['recipient'],
+                                                 glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'], gasPrice=data['gas_price'], gasPriceGwei=['gas_price_gwei'], linked_invoice=invoice)
+                invoice.linked_payment = payment
+                invoice.save()
+            return HttpResponse(status=201)
+        elif request.method == 'PATCH':
+            data = json.loads(request.body)
+            project = Project.objects.get(apikey=data['apikey'])
+            payment = Payment.objects.get(tx=data['tx'])
             invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-            payment = Payment.objects.create(project=project, tx=data['tx'], status=data['status'], sender=data['sender'], recipient=data['recipient'],
-                                             glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'], gasPrice=data['gas_price'], gasPriceGwei=['gas_price_gwei'], linked_invoice=invoice)
+            payment.linked_invoice = invoice
+            payment.save()
             invoice.linked_payment = payment
             invoice.save()
-        return HttpResponse(status=201)
-    elif request.method == 'PATCH':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
-        payment = Payment.objects.get(tx=data['tx'])
-        invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-        payment.linked_invoice = invoice
-        payment.save()
-        invoice.linked_payment = payment
-        invoice.save()
-        return HttpResponse(status=200)
+            return HttpResponse(status=200)
 
 
 @csrf_exempt
@@ -141,3 +141,4 @@ def providernode_endpoint(request):
             providerObj.save()
         providerNodeObj = ProviderNode.objects.get_or_create(
             provider_id=data['provider_id'], subnet=data['subnet'], project=project, linked_provider=providerObj)
+        return HttpResponse(status=201)
