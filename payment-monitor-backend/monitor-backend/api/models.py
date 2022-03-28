@@ -94,14 +94,15 @@ class Invoice(models.Model):
 
 class Activity(models.Model):
     providerNode = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
+    unique_identifier = models.UUIDField()
     requestorNode = models.ForeignKey(RequestorNode, on_delete=models.CASCADE)
     jobName = models.CharField(max_length=64)
     jobQuantity = models.FloatField()
     jobUnit = models.CharField(max_length=64)
     cpuTime = models.FloatField()
     jobCost = models.FloatField()
-    payment = models.ForeignKey(
-        Payment, null=True, blank=True, on_delete=models.CASCADE)
+    invoice = models.ForeignKey(
+        Invoice, null=True, blank=True, on_delete=models.CASCADE)
     agreement = models.ForeignKey(
         Agreement, null=True, blank=True, on_delete=models.CASCADE)
     taskStatus = models.CharField(max_length=64)
