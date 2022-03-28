@@ -38,10 +38,14 @@ class Agreement(models.Model):
 
 
 class Payment(models.Model):
+    # unique id is generated from unique triple below.
+    # Django has poor support of multiple column primary key so created this one
+    id = models.CharField(max_length=42, primary_key=True)
+
     # unique triple, these three values have to be unique on Ethereum based chain
-    network = models.IntegerField(primary_key=True)
-    nonce = models.BigIntegerField(primary_key=True)
-    sender = models.CharField(primary_key=True, max_length=42, null=True, default=None)
+    network = models.IntegerField()
+    nonce = models.BigIntegerField()
+    sender = models.CharField(max_length=42)
 
     # reported specifically by yagna
     yagnaTimeCreated = models.DateTimeField()

@@ -6,7 +6,7 @@ from api.models import Payment, Invoice, Agreement, ProviderNode, Project, Provi
 from .tasks import check_tx_status
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync, sync_to_async
-
+import hashlib
 
 @sync_to_async
 @csrf_exempt
@@ -52,6 +52,10 @@ def agreement_endpoint(request):
     else:
         return HttpResponse(status=400)
 
+def get_payment_id(sender, network, nonce):
+    payload = sender + "_" + str(network) + "_" + str(nonce)
+    payment_id = hashlib.sha1(payload.encode('utf-8')).hexdigest()
+    return payment_id
 
 @csrf_exempt
 def invoice_endpoint(request):
@@ -59,12 +63,18 @@ def invoice_endpoint(request):
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
         agreement = Agreement.objects.get(agreement_id=data['agreement_id'])
+        sender = data['payment']['sender'].lower()
+        recipient = data['payment']['recipient'].lower()
         if "payment" in data:
-            payment = Payment.objects.create(
+
+            payment_id = get_payment_id(sender, data['payment']['network'], data['payment']['nonce'])
+
+            payment = Payment.objects.update_or_create(
+                id = payment_id,
                 project=project,
                 network=data['payment']['network'],
                 nonce=data['payment']['nonce'],
-                sender=data['payment']['sender'],
+                sender=sender,
 
                 yagnaTimeCreated=data['payment']['time_created'],
                 yagnaTimeLastAction=data['payment']['time_last_action'],
@@ -76,7 +86,7 @@ def invoice_endpoint(request):
 
                 finalTx=data['payment']['tx_id'],
 
-                recipient=data['payment']['recipient'],
+                recipient=recipient,
                 gasUsed=data['payment']['final_gas_used'],
                 gasLimit=data['payment']['gas_limit'],
                 gasPrice=data['payment']['current_gas_price'],
