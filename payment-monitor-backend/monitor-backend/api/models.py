@@ -39,22 +39,19 @@ class Agreement(models.Model):
 
 class Payment(models.Model):
     # unique triple, these three values have to be unique on Ethereum based chain
-    network = models.IntegerField(),
-    nonce = models.BigIntegerField(),
+    network = models.IntegerField()
+    nonce = models.BigIntegerField()
     sender = models.CharField(max_length=42, null=True, default=None)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['network', 'nonce', 'sender'], name='primary_transaction_triple')
-        ]
-
     # reported specifically by yagna
-    yagnaTimeCreated = models.DateTimeField(),
-    yagnaTimeLastAction = models.DateTimeField(),
-    yagnaTimeSent = models.DateTimeField(),
-    yagnaTimeConfirmed = models.DateTimeField(),
-    yagnaStartingGasPrice = models.CharField(max_length=128, null=True, default=None)
-    yagnaMaximumGasPrice = models.CharField(max_length=128, null=True, default=None)
+    yagnaTimeCreated = models.DateTimeField()
+    yagnaTimeLastAction = models.DateTimeField()
+    yagnaTimeSent = models.DateTimeField()
+    yagnaTimeConfirmed = models.DateTimeField()
+    yagnaStartingGasPrice = models.CharField(
+        max_length=128, null=True, default=None)
+    yagnaMaximumGasPrice = models.CharField(
+        max_length=128, null=True, default=None)
     yagnaStatus = models.IntegerField()
 
     # final transaction hash if payment successful
@@ -77,6 +74,11 @@ class Payment(models.Model):
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['network', 'nonce', 'sender'], name='primary_transaction_triple')
+        ]
 
 
 class Invoice(models.Model):
@@ -88,7 +90,6 @@ class Invoice(models.Model):
     project = models.ForeignKey('api.Project', on_delete=models.CASCADE)
     linked_payment = models.ForeignKey(
         'api.Payment', on_delete=models.CASCADE, null=True, blank=True)
-
 
 
 class Activity(models.Model):

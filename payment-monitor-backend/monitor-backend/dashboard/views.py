@@ -1,7 +1,7 @@
 from api.models import Payment
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from api.models.models import Project
+from api.models import Project
 # Create your views here.
 
 
