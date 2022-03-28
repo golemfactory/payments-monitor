@@ -99,7 +99,7 @@ def invoice_endpoint(request):
                 gas_spent_human=data['payment']['gas_spent_human'],
                 gas_price_gwei=data['payment']['gas_price_gwei'])
 
-            invoice = Invoice.objects.create(amount=data['amount'], invoice_id=data['invoice_id'],
+            invoice, _ = Invoice.objects.update_or_create(amount=data['amount'], invoice_id=data['invoice_id'],
                                              issuer_id=data['issuer_id'], payment_platform=data['payment_platform'],
                                              agreement=agreement, project=project, linked_payment=payment)
             payment.save()
@@ -175,38 +175,35 @@ def activity_endpoint(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
-        requestorNodeObj, requestorObjCreated = RequestorNode.objects.get_or_create(
-            wallet_address=data['requestor']['wallet_address'], project=project)
-        providerObj, providerObjCreated = Provider.objects.get_or_create(
-            wallet_address=data['provider']['wallet_address'], project=project)
+        requestorAgent, _ = RequestorAgent.objects.get_or_create(
+            requestor_id=data['requestor']['requestor_id'],
+            wallet_address=data['requestor']['wallet_address'],
+            node_name=data['requestor']['node_name'],
+            project=project)
 
-        if "name" in data['provider']:
-            providerObj.name = data['provider']['name']
-            providerObj.save()
-        else:
-            providerObj.save()
-        providerNodeObj = ProviderNode.objects.get_or_create(
-            node_id=data['provider']['provider_id'], subnet=data['provider']['subnet'], project=project,
-            linked_provider=providerObj)
+        providerNodeObj = ProviderNode.objects.get(
+            node_id=data['provider']['provider_id'],
+            project=project
+        )
 
-        agreementObj, agreementObjCreated = Agreement.objects.get_or_create(
-            agreement_id=data['agreement_id'], project=project, provider_node=providerNodeObj)
+        agreementObj = Agreement.objects.get(agreement_id=data['agreement_id'])
 
-        activity = Activity.objects.create(project=project, taskStatus=data['task_status'], jobCost=data['job_cost'],
-                                           cpuTime=data['cpu_time'], jobUnit=data['job_unit'],
-                                           jobQuantity=data['job_quantity'], jobName=data['job_name'],
-                                           provider_node=providerNodeObj, requestorNode=requestorNodeObj,
-                                           agreement=agreementObj, unique_identifier=data['unique_identifier'])
+        activity = Activity.objects.create(project=project, task_status=data['task_status'], job_cost=data['job_cost'],
+                                           cpu_time=data['cpu_time'], job_unit=data['job_unit'],
+                                           job_quantity=data['job_quantity'], job_name=data['job_name'],
+                                           provider_node=providerNodeObj, requestor_node=requestorAgent,
+                                           agreement=agreementObj, activity_id=data['activity_id'])
 
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
-        activity = Activity.objects.get(
-            unique_identifier=data['unique_identifier'])
-        invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-        activity.invoice = invoice
-        activity.save()
+        if 0:
+            data = json.loads(request.body)
+            project = Project.objects.get(apikey=data['apikey'])
+            activity = Activity.objects.get(
+                unique_identifier=data['unique_identifier'])
+            invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
+            activity.invoice = invoice
+            activity.save()
 
 
 @csrf_exempt
