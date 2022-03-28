@@ -186,13 +186,20 @@ def activity_endpoint(request):
             project=project
         )
 
+        invoice = None
+        if "invoice_id" in data:
+           invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
+
+
+
         agreementObj = Agreement.objects.get(agreement_id=data['agreement_id'])
 
         activity = Activity.objects.create(project=project, task_status=data['task_status'], job_cost=data['job_cost'],
                                            cpu_time=data['cpu_time'], job_unit=data['job_unit'],
                                            job_quantity=data['job_quantity'], job_name=data['job_name'],
                                            provider_node=providerNodeObj, requestor_node=requestorAgent,
-                                           agreement=agreementObj, activity_id=data['activity_id'])
+                                           agreement=agreementObj, activity_id=data['activity_id'],
+                                           invoice=invoice)
 
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
