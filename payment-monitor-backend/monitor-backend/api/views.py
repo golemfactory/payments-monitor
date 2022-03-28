@@ -59,8 +59,31 @@ def invoice_endpoint(request):
         project = Project.objects.get(apikey=data['apikey'])
         agreement = Agreement.objects.get(agreement_id=data['agreement_id'])
         if "payment" in data:
-            payment = Payment.objects.create(project=project, tx=data['payment']['tx_id'], status=data['payment']['status'], sender=data['payment']['sender'], recipient=data['payment']['recipient'],  glm=data[
-                                             'payment']['glm'], matic=data['payment']['matic'], gasUsed=data['payment']['gas_used'], gasPrice=data['payment']['gas_price'], gasPriceGwei=data['payment']['gas_price_gwei'])
+            payment = Payment.objects.create(
+                project=project,
+                network=data['payment']['network'],
+                nonce=data['payment']['nonce'],
+                sender=data['payment']['sender'],
+
+                yagnaTimeCreated=data['payment']['time_created'],
+                yagnaTimeLastAction=data['payment']['time_last_action'],
+                yagnaTimeSent=data['payment']['time_sent'],
+                yagnaTimeConfirmed=data['payment']['time_confirmed'],
+                yagnaStartingGasPrice=data['payment']['starting_gas_price'],
+                yagnaMaximumGasPrice=data['payment']['max_gas_price'],
+                yagnaStatus=data['payment']['status'],
+
+                finalTx=data['payment']['tx_id'],
+
+                recipient=data['payment']['recipient'],
+                gasUsed=data['payment']['final_gas_used'],
+                gasLimit=data['payment']['gas_limit'],
+                gasPrice=data['payment']['current_gas_price'],
+
+                amountHuman=data['payment']['amount_human'],
+                gasSpentHuman=data['payment']['gas_spent_human'],
+                gasPriceGwei=data['payment']['gas_price_gwei'])
+
             invoice = Invoice.objects.create(amount=data['amount'], invoice_id=data['invoice_id'],
                                              issuer_id=data['issuer_id'], payment_platform=data['payment_platform'], agreement=agreement, project=project, linked_payment=payment)
             payment.linked_invoice = invoice
