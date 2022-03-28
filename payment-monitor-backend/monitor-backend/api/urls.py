@@ -11,4 +11,5 @@ urlpatterns = [
     path('provider', views.provider_endpoint),
     path('providernode', views.providernode_endpoint),
     path('invoice', views.invoice_endpoint),
+    path('activity', views.activity_endpoint),
 ]

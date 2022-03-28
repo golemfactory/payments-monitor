@@ -1,3 +1,4 @@
+from operator import inv
 from django.http import HttpResponse, JsonResponse
 import json
 import requests
@@ -151,6 +152,41 @@ def provider_endpoint(request):
 
 
 @csrf_exempt
+def activity_endpoint(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        project = Project.objects.get(apikey=data['apikey'])
+        requestorNodeObj, requestorObjCreated = RequestorNode.objects.get_or_create(
+            walletAddress=data['requestor']['wallet_address'], project=project)
+        providerObj, providerObjCreated = Provider.objects.get_or_create(
+            walletAddress=data['provider']['wallet_address'], project=project)
+
+        if "name" in data['provider']:
+            providerObj.name = data['provider']['name']
+            providerObj.save()
+        else:
+            providerObj.save()
+        providerNodeObj = ProviderNode.objects.get_or_create(
+            provider_id=data['provider']['provider_id'], subnet=data['provider']['subnet'], project=project, linked_provider=providerObj)
+
+        agreementObj, agreementObjCreated = Agreement.objects.get_or_create(
+            agreement_id=data['agreement_id'], project=project, providernode=providerNodeObj)
+
+        activity = Activity.objects.create(project=project, taskStatus=data['task_status'], jobCost=data['job_cost'],
+                                           cpuTime=data['cpu_time'], jobUnit=data['job_unit'], jobQuantity=data['job_quantity'], jobName=data['job_name'], providerNode=providerNodeObj, requestorNode=requestorNodeObj, agreement=agreementObj, unique_identifier=data['unique_identifier'])
+
+        return HttpResponse(status=201)
+    elif request.method == 'PATCH':
+        data = json.loads(request.body)
+        project = Project.objects.get(apikey=data['apikey'])
+        activity = Activity.objects.get(
+            unique_identifier=data['unique_identifier'])
+        invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
+        activity.invoice = invoice
+        activity.save()
+
+
+@ csrf_exempt
 def providernode_endpoint(request):
     if request.method == 'POST':
         data = json.loads(request.body)

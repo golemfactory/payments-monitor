@@ -142,6 +142,7 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('unique_identifier', models.UUIDField()),
                 ('jobName', models.CharField(max_length=64)),
                 ('jobQuantity', models.FloatField()),
                 ('jobUnit', models.CharField(max_length=64)),
@@ -149,7 +150,7 @@ class Migration(migrations.Migration):
                 ('jobCost', models.FloatField()),
                 ('taskStatus', models.CharField(max_length=64)),
                 ('agreement', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='api.agreement')),
-                ('payment', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='api.payment')),
+                ('invoice', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='api.invoice')),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.project')),
                 ('providerNode', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.providernode')),
                 ('requestorNode', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.requestornode')),
