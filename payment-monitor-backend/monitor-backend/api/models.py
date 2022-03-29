@@ -8,6 +8,7 @@ class User(AbstractUser):
 
 
 class Project(models.Model):
+    id = models.UUIDField(primary_key=True)
     name = models.CharField(max_length=64)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     apikey = models.UUIDField(default=uuid.uuid4, editable=True)
@@ -22,12 +23,16 @@ class RequestorAgent(models.Model):
 
 
 class Provider(models.Model):
-    wallet_address = models.CharField(max_length=42, primary_key=True)
+    id = models.UUIDField(primary_key=True)
+    # wallet_address - this pair should be unique (wallet_address, project)
+    wallet_address = models.CharField(max_length=42)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class ProviderNode(models.Model):
-    node_id = models.CharField(max_length=40, primary_key=True)
+    id = models.UUIDField(primary_key=True)
+    # system node id - this pair should be unique (node_id, project)
+    node_id = models.CharField(max_length=40)
     linked_provider = models.ForeignKey(Provider, on_delete=models.CASCADE)
     node_name = models.CharField(max_length=128, null=True, blank=True)
     subnet = models.CharField(max_length=128)
