@@ -12,6 +12,7 @@ class Project(models.Model):
     name = models.CharField(max_length=64)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     apikey = models.UUIDField(default=uuid.uuid4, editable=True)
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
 
 
 # Basically requestor node
@@ -107,7 +108,8 @@ class Invoice(models.Model):
 class Activity(models.Model):
     activity_id = models.UUIDField(primary_key=True)
     provider_node = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
-    requestor_node = models.ForeignKey(RequestorAgent, on_delete=models.CASCADE)
+    requestor_node = models.ForeignKey(
+        RequestorAgent, on_delete=models.CASCADE)
     job_name = models.CharField(max_length=64)
     job_quantity = models.FloatField()
     job_unit = models.CharField(max_length=64)
