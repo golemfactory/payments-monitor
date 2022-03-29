@@ -76,40 +76,44 @@ def invoice_endpoint(request):
 
             payment, _ = Payment.objects.update_or_create(
                 id=payment_id,
-                project=project,
-                network=data['payment']['network'],
-                nonce=data['payment']['nonce'],
-                sender=sender,
+                defaults={
+                    'project': project,
+                    'network': data['payment']['network'],
+                    'nonce': data['payment']['nonce'],
+                    'sender': sender,
 
-                yagna_time_created=data['payment']['time_created'],
-                yagna_time_last_action=data['payment']['time_last_action'],
-                yagna_time_sent=data['payment']['time_sent'],
-                yagna_time_confirmed=data['payment']['time_confirmed'],
-                yagna_starting_gas_price=data['payment']['starting_gas_price'],
-                yagna_maximum_gas_price=data['payment']['max_gas_price'],
-                yagna_status=data['payment']['status'],
+                    'yagna_time_created': data['payment']['time_created'],
+                    'yagna_time_last_action': data['payment']['time_last_action'],
+                    'yagna_time_sent': data['payment']['time_sent'],
+                    'yagna_time_confirmed': data['payment']['time_confirmed'],
+                    'yagna_starting_gas_price': data['payment']['starting_gas_price'],
+                    'yagna_maximum_gas_price': data['payment']['max_gas_price'],
+                    'yagna_status': data['payment']['status'],
 
-                final_tx=data['payment']['tx_id'],
+                    'final_tx': data['payment']['tx_id'],
 
-                recipient=recipient,
-                gas_used=data['payment']['final_gas_used'],
-                gas_limit=data['payment']['gas_limit'],
-                gas_price=data['payment']['current_gas_price'],
+                    'recipient': recipient,
+                    'gas_used': data['payment']['final_gas_used'],
+                    'gas_limit': data['payment']['gas_limit'],
+                    'gas_price': data['payment']['current_gas_price'],
 
-                amount_human=data['payment']['amount_human'],
-                gas_spent_human=data['payment']['gas_spent_human'],
-                gas_price_gwei=data['payment']['gas_price_gwei'])
+                    'amount_human': data['payment']['amount_human'],
+                    'gas_spent_human': data['payment']['gas_spent_human'],
+                    'gas_price_gwei': data['payment']['gas_price_gwei']
+                })
 
         invoice, _ = Invoice.objects.update_or_create(
-            amount=data['amount'],
             invoice_id=data['invoice_id'],
-            issuer_id=data['issuer_id'],
-            invoice_status=data['invoice_status'],
-            payment_platform=data['payment_platform'],
-            is_debit_note=data['is_debit_note'],
-            agreement=agreement,
-            project=project,
-            linked_payment=payment)
+            defaults={
+                'amount': data['amount'],
+                'issuer_id': data['issuer_id'],
+                'invoice_status': data['invoice_status'],
+                'payment_platform': data['payment_platform'],
+                'is_debit_note': data['is_debit_note'],
+                'agreement': agreement,
+                'project': project,
+                'linked_payment': payment,
+            })
 
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
