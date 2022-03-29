@@ -56,10 +56,10 @@ class Payment(models.Model):
     sender = models.CharField(max_length=42)
 
     # reported specifically by yagna
-    yagna_time_created = models.DateTimeField()
-    yagna_time_last_action = models.DateTimeField()
-    yagna_time_sent = models.DateTimeField()
-    yagna_time_confirmed = models.DateTimeField()
+    yagna_time_created = models.DateTimeField(null=True)
+    yagna_time_last_action = models.DateTimeField(null=True)
+    yagna_time_sent = models.DateTimeField(null=True)
+    yagna_time_confirmed = models.DateTimeField(null=True)
     yagna_starting_gas_price = models.CharField(
         max_length=128, null=True, default=None)
     yagna_maximum_gas_price = models.CharField(
@@ -100,6 +100,8 @@ class Invoice(models.Model):
     payment_platform = models.CharField(max_length=64)
     agreement = models.ForeignKey('api.Agreement', on_delete=models.CASCADE)
     project = models.ForeignKey('api.Project', on_delete=models.CASCADE)
+    invoice_status = models.CharField(max_length=256, null=True)
+    is_debit_note = models.BooleanField(default=False)
     linked_payment = models.ForeignKey(
         'api.Payment', on_delete=models.CASCADE, null=True, blank=True)
 

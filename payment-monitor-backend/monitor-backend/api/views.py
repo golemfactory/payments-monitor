@@ -67,9 +67,10 @@ def invoice_endpoint(request):
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
         agreement = Agreement.objects.get(agreement_id=data['agreement_id'])
-        sender = data['payment']['sender'].lower()
-        recipient = data['payment']['recipient'].lower()
-        if "payment" in data:
+        payment = None
+        if "payment" in data and data["payment"]:
+            sender = data['payment']['sender'].lower()
+            recipient = data['payment']['recipient'].lower()
 
             payment_id = get_payment_id(sender, data['payment']['network'], data['payment']['nonce'])
 
@@ -99,14 +100,17 @@ def invoice_endpoint(request):
                 gas_spent_human=data['payment']['gas_spent_human'],
                 gas_price_gwei=data['payment']['gas_price_gwei'])
 
-            invoice, _ = Invoice.objects.update_or_create(amount=data['amount'], invoice_id=data['invoice_id'],
-                                             issuer_id=data['issuer_id'], payment_platform=data['payment_platform'],
-                                             agreement=agreement, project=project, linked_payment=payment)
-            payment.save()
-        else:
-            Invoice.objects.create(amount=data['amount'], invoice_id=data['invoice_id'],
-                                   issuer_id=data['issuer_id'], payment_platform=data['payment_platform'],
-                                   agreement=agreement, project=project)
+        invoice, _ = Invoice.objects.update_or_create(
+            amount=data['amount'],
+            invoice_id=data['invoice_id'],
+            issuer_id=data['issuer_id'],
+            invoice_status=data['invoice_status'],
+            payment_platform=data['payment_platform'],
+            is_debit_note=data['is_debit_note'],
+            agreement=agreement,
+            project=project,
+            linked_payment=payment)
+
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
         data = json.loads(request.body)
@@ -188,9 +192,7 @@ def activity_endpoint(request):
 
         invoice = None
         if "invoice_id" in data:
-           invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-
-
+            invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
 
         agreementObj = Agreement.objects.get(agreement_id=data['agreement_id'])
 
