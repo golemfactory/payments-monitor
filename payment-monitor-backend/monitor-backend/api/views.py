@@ -7,13 +7,12 @@ from .tasks import check_tx_status
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync, sync_to_async
 import hashlib
-from django.forms.models import model_to_dict
 
 
 @sync_to_async
 @csrf_exempt
 @async_to_sync
-async def process_payment(request):
+async def process_payment(request, apikey):
     """
     Endpoint to receive payment info and send it to the celery workers for checking.
     """
@@ -27,10 +26,10 @@ async def process_payment(request):
 
 
 @csrf_exempt
-def agreement_endpoint(request, apikey=None):
+def agreement_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         providerObj, providerObjCreated = Provider.objects.get_or_create(
             wallet_address=data['provider']['wallet_address'], project=project)
         if "name" in data['provider']:
@@ -46,9 +45,9 @@ def agreement_endpoint(request, apikey=None):
         return HttpResponse(status=201)
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        agreement = Agreement.objects.filter(project=project)
+        agreement = Agreement.objects.filter(project=project).values()
         if agreement:
-            return JsonResponse(model_to_dict(agreement), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(agreement), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -62,10 +61,10 @@ def get_payment_id(sender, network, nonce):
 
 
 @csrf_exempt
-def invoice_endpoint(request, apikey=None):
+def invoice_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         agreement = Agreement.objects.get(agreement_id=data['agreement_id'])
         payment = None
         if "payment" in data and data["payment"]:
@@ -119,7 +118,7 @@ def invoice_endpoint(request, apikey=None):
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
         payment = Payment.objects.get(tx=data['tx_id'])
         payment.linked_invoice = invoice
@@ -129,9 +128,9 @@ def invoice_endpoint(request, apikey=None):
         return HttpResponse(status=200)
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        invoices = Invoice.objects.filter(project=project)
+        invoices = Invoice.objects.filter(project=project).values()
         if invoices:
-            return JsonResponse(model_to_dict(invoices), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(invoices), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -139,10 +138,10 @@ def invoice_endpoint(request, apikey=None):
 
 
 @csrf_exempt
-def payment_endpoint(request, apikey=None):
+def payment_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         payment = Payment.objects.create(project=project, tx=data['tx_id'], status=data['status'],
                                          sender=data['sender'], recipient=data['recipient'],
                                          glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'],
@@ -160,7 +159,7 @@ def payment_endpoint(request, apikey=None):
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         payment = Payment.objects.get(tx=data['tx'])
         invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
         payment.save()
@@ -169,9 +168,9 @@ def payment_endpoint(request, apikey=None):
         return HttpResponse(status=200)
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        payments = Payment.objects.filter(project=project)
+        payments = Payment.objects.filter(project=project).values()
         if payments:
-            return JsonResponse(model_to_dict(payments), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(payments), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -179,10 +178,10 @@ def payment_endpoint(request, apikey=None):
 
 
 @csrf_exempt
-def provider_endpoint(request, apikey=None):
+def provider_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         provider = Provider.objects.create(
             wallet_address=data['wallet_address'], project=project)
         if "name" in data:
@@ -191,15 +190,15 @@ def provider_endpoint(request, apikey=None):
         return HttpResponse(status=201)
     elif request.method == 'PATCH':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         provider = Provider.objects.get(wallet_address=data['wallet_address'])
         provider.name = data['name']
         provider.save()
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        providers = Provider.objects.filter(project=project)
+        providers = Provider.objects.filter(project=project).values()
         if providers:
-            return JsonResponse(model_to_dict(providers), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(providers), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -207,10 +206,10 @@ def provider_endpoint(request, apikey=None):
 
 
 @csrf_exempt
-def activity_endpoint(request, apikey=None):
+def activity_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         requestorAgent, _ = RequestorAgent.objects.get_or_create(
             requestor_id=data['requestor']['requestor_id'],
             wallet_address=data['requestor']['wallet_address'],
@@ -239,7 +238,7 @@ def activity_endpoint(request, apikey=None):
     elif request.method == 'PATCH':
         if 0:
             data = json.loads(request.body)
-            project = Project.objects.get(apikey=data['apikey'])
+            project = Project.objects.get(apikey=apikey)
             activity = Activity.objects.get(
                 unique_identifier=data['unique_identifier'])
             invoice = Activity.objects.get(invoice_id=data['invoice_id'])
@@ -247,9 +246,9 @@ def activity_endpoint(request, apikey=None):
             activity.save()
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        activites = Activity.objects.filter(project=project)
+        activites = Activity.objects.filter(project=project).values()
         if activites:
-            return JsonResponse(model_to_dict(activites), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(activites), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -257,10 +256,10 @@ def activity_endpoint(request, apikey=None):
 
 
 @csrf_exempt
-def providernode_endpoint(request, apikey=None):
+def providernode_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         providerObj, providerObjCreated = Provider.objects.get_or_create(
             wallet_address=data['wallet_address'], project=project)
 
@@ -270,9 +269,9 @@ def providernode_endpoint(request, apikey=None):
         return HttpResponse(status=201)
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
-        providernodes = ProviderNode.objects.filter(project=project)
+        providernodes = ProviderNode.objects.filter(project=project).values()
         if providernodes:
-            return JsonResponse(model_to_dict(providernodes), json_dumps_params={'indent': 4}, safe=False)
+            return JsonResponse(list(providernodes), json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:

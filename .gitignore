@@ -5,3 +5,4 @@ payments-frontend
 payment-monitor-backend/monitor-backend/db.sqlite3
 .envs/.pgadmin
 payment-monitor-backend/monitor-backend/db.sqlite3
+mockup_filler/*
