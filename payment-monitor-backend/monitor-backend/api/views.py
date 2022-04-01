@@ -47,7 +47,7 @@ def agreement_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         agreement = Agreement.objects.filter(project=project)
         if agreement:
-            return JsonResponse(agreement, json_dumps_params={'indent': 4})
+            return JsonResponse(agreement, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -130,7 +130,7 @@ def invoice_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         invoices = Invoice.objects.filter(project=project)
         if invoices:
-            return JsonResponse(invoices, json_dumps_params={'indent': 4})
+            return JsonResponse(invoices, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -170,7 +170,7 @@ def payment_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         payments = Payment.objects.filter(project=project)
         if payments:
-            return JsonResponse(payments, json_dumps_params={'indent': 4})
+            return JsonResponse(payments, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -198,7 +198,7 @@ def provider_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         providers = Provider.objects.filter(project=project)
         if providers:
-            return JsonResponse(providers, json_dumps_params={'indent': 4})
+            return JsonResponse(providers, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -248,7 +248,7 @@ def activity_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         activites = Activity.objects.filter(project=project)
         if activites:
-            return JsonResponse(activites, json_dumps_params={'indent': 4})
+            return JsonResponse(activites, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
@@ -271,7 +271,7 @@ def providernode_endpoint(request, apikey=None):
         project = Project.objects.get(apikey=apikey)
         providernodes = ProviderNode.objects.filter(project=project)
         if providernodes:
-            return JsonResponse(providernodes, json_dumps_params={'indent': 4})
+            return JsonResponse(providernodes, json_dumps_params={'indent': 4}, safe=False)
         else:
             return HttpResponse(status=403)
     else:
