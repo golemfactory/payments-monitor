@@ -6,10 +6,10 @@ from . import views
 app_name = 'api'
 
 urlpatterns = [
-    path('payment', views.payment_endpoint),
-    path('agreement', views.agreement_endpoint),
-    path('provider', views.provider_endpoint),
-    path('providernode', views.providernode_endpoint),
-    path('invoice', views.invoice_endpoint),
-    path('activity', views.activity_endpoint),
+    path('payment/<apikey>', views.payment_endpoint),
+    path('agreement/<apikey>', views.agreement_endpoint),
+    path('provider/<apikey>', views.provider_endpoint),
+    path('providernode/<apikey>', views.providernode_endpoint),
+    path('invoice/<apikey>', views.invoice_endpoint),
+    path('activity/<apikey>', views.activity_endpoint),
 ]

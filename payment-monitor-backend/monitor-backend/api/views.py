@@ -26,7 +26,7 @@ async def process_payment(request):
 
 
 @csrf_exempt
-def agreement_endpoint(request):
+def agreement_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -44,8 +44,7 @@ def agreement_endpoint(request):
             agreement_id=data['agreement_id'], project=project, provider_node=providerNodeObj)
         return HttpResponse(status=201)
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         agreement = Agreement.objects.filter(project=project)
         if agreement.project == project:
             return JsonResponse(agreement, json_dumps_params={'indent': 4})
@@ -62,7 +61,7 @@ def get_payment_id(sender, network, nonce):
 
 
 @csrf_exempt
-def invoice_endpoint(request):
+def invoice_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -128,8 +127,7 @@ def invoice_endpoint(request):
         invoice.save()
         return HttpResponse(status=200)
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         invoices = Invoice.objects.filter(project=project)
         if invoices.project == project:
             return JsonResponse(invoices, json_dumps_params={'indent': 4})
@@ -140,7 +138,7 @@ def invoice_endpoint(request):
 
 
 @csrf_exempt
-def payment_endpoint(request):
+def payment_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -169,8 +167,7 @@ def payment_endpoint(request):
         invoice.save()
         return HttpResponse(status=200)
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         payments = Payment.objects.filter(project=project)
         if payments.project == project:
             return JsonResponse(payments, json_dumps_params={'indent': 4})
@@ -181,7 +178,7 @@ def payment_endpoint(request):
 
 
 @csrf_exempt
-def provider_endpoint(request):
+def provider_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -198,8 +195,7 @@ def provider_endpoint(request):
         provider.name = data['name']
         provider.save()
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         providers = Provider.objects.filter(project=project)
         if providers.project == project:
             return JsonResponse(providers, json_dumps_params={'indent': 4})
@@ -210,7 +206,7 @@ def provider_endpoint(request):
 
 
 @csrf_exempt
-def activity_endpoint(request):
+def activity_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -249,8 +245,7 @@ def activity_endpoint(request):
             activity.invoice = invoice
             activity.save()
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         activites = Activity.objects.filter(project=project)
         if activites.project == project:
             return JsonResponse(activites, json_dumps_params={'indent': 4})
@@ -261,7 +256,7 @@ def activity_endpoint(request):
 
 
 @csrf_exempt
-def providernode_endpoint(request):
+def providernode_endpoint(request, apikey=None):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=data['apikey'])
@@ -273,8 +268,7 @@ def providernode_endpoint(request):
             linked_provider=providerObj)
         return HttpResponse(status=201)
     elif request.method == 'GET':
-        data = json.loads(request.body)
-        project = Project.objects.get(apikey=data['apikey'])
+        project = Project.objects.get(apikey=apikey)
         providernodes = ProviderNode.objects.filter(project=project)
         if providernodes.project == project:
             return JsonResponse(providernodes, json_dumps_params={'indent': 4})
