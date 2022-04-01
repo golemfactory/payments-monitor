@@ -12,31 +12,31 @@ class PaymentAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(Invoice)
+@admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(Project)
+@admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(RequestorAgent)
+@admin.register(RequestorAgent)
 class RequestorAgentAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(Provider)
+@admin.register(Provider)
 class ProviderAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(ProviderNode)
+@admin.register(ProviderNode)
 class ProviderNodeAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.site.register(Agreement)
+@admin.register(Agreement)
 class AgreementAdmin(admin.ModelAdmin):
     pass
