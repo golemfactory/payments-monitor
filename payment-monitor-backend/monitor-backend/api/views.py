@@ -46,7 +46,7 @@ def agreement_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         agreement = Agreement.objects.filter(project=project)
-        if agreement.project == project:
+        if agreement:
             return JsonResponse(agreement, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
@@ -129,7 +129,7 @@ def invoice_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         invoices = Invoice.objects.filter(project=project)
-        if invoices.project == project:
+        if invoices:
             return JsonResponse(invoices, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
@@ -169,7 +169,7 @@ def payment_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         payments = Payment.objects.filter(project=project)
-        if payments.project == project:
+        if payments:
             return JsonResponse(payments, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
@@ -197,7 +197,7 @@ def provider_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         providers = Provider.objects.filter(project=project)
-        if providers.project == project:
+        if providers:
             return JsonResponse(providers, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
@@ -247,7 +247,7 @@ def activity_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         activites = Activity.objects.filter(project=project)
-        if activites.project == project:
+        if activites:
             return JsonResponse(activites, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
@@ -270,7 +270,7 @@ def providernode_endpoint(request, apikey=None):
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
         providernodes = ProviderNode.objects.filter(project=project)
-        if providernodes.project == project:
+        if providernodes:
             return JsonResponse(providernodes, json_dumps_params={'indent': 4})
         else:
             return HttpResponse(status=403)
