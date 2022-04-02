@@ -7,7 +7,7 @@ export default function Form() {
   const [isLoading, setLoading] = useState(false)
   const registerUser = (event) => {
     event.preventDefault() // don't redirect the page
-    fetch("https://api.pmonitor.golem.network/v1/invoice/" + event.target.apikey.value)
+    fetch("https://api.pmonitor.golem.network/v1/payment/" + event.target.apikey.value)
       .then((r) => r.json())
 
       .then((data) => {
@@ -28,7 +28,7 @@ export default function Form() {
     return (
       <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">View Invoices</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">View Payments</h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             <p className="font-medium text-indigo-600 hover:text-indigo-500">Back to dashboard</p>
           </p>
@@ -57,7 +57,7 @@ export default function Form() {
                   type="submit"
                   className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-golemblue hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                  See Invoices
+                  See Payments
                 </button>
               </div>
             </form>
@@ -70,15 +70,15 @@ export default function Form() {
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Invoices</h1>
-          <p className="mt-2 text-sm text-gray-700">A list of all Invoices.</p>
+          <h1 className="text-xl font-semibold text-gray-900">Payments</h1>
+          <p className="mt-2 text-sm text-gray-700">A list of all payments.</p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-golemblue px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
           >
-            Add Invoice
+            Add Payment
           </button>
         </div>
       </div>
@@ -90,16 +90,16 @@ export default function Form() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                      Invoice ID
+                      Sender
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      GLM amount
+                      GLM spent
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Payment Platform
+                      MATIC spent
                     </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Invoice Status
+                      Transaction Hash
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">View</span>
@@ -108,14 +108,14 @@ export default function Form() {
                 </thead>
                 <tbody className="bg-white">
                   {data.map((row) => (
-                    <tr key={row.invoice_id} className="bg-gray-50">
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{row.invoice_id}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.amount}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.payment_platform}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.invoice_status}</td>
+                    <tr key={row.id} className="bg-gray-50">
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{row.sender}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.amount_human}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.gas_spent_human}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.final_tx}</td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                          View<span className="sr-only">, {row.issuer_id}</span>
+                          View<span className="sr-only">, {row.yagna_time_confirmed}</span>
                         </a>
                       </td>
                     </tr>

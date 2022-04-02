@@ -1,6 +1,7 @@
 import Head from "next/head"
 import Image from "next/image"
 import React, { useState, useEffect } from "react"
+import Stats from "../components/Stats"
 
 export default function Form() {
   const [data, setData] = useState(null)
@@ -26,44 +27,11 @@ export default function Form() {
   if (isLoading) return <p>Loading...</p>
   if (!data)
     return (
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Requestor Portal</h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            <p className="font-medium text-indigo-600 hover:text-indigo-500">Back to dashboard</p>
-          </p>
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Top">
+        <div className="w-full py-6  border-b border-indigo-500 lg:border-none">
+          <Stats></Stats>
         </div>
-
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={registerUser}>
-              <div>
-                <label htmlFor="apikey" className="block text-sm font-medium text-gray-700">
-                  Project API Key
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="apikey"
-                    name="apikey"
-                    type="text"
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  See Payments
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+      </nav>
     )
 
   return (
@@ -76,7 +44,7 @@ export default function Form() {
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <button
             type="button"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+            className="inline-flex items-center justify-center rounded-md border border-transparent bg-golemblue px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
           >
             Add Payment
           </button>
