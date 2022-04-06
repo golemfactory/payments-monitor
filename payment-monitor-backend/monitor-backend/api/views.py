@@ -59,9 +59,9 @@ def agreement_endpoint(request, apikey):
                 'amount_scheduled': data['amount_scheduled'],
                 'amount_paid': data['amount_paid'],
                 'state': data['state'],
-                'demand_properties': base64.b64decode(data["demand_properties"].encode('ascii')).decode("utf-8"),
+                'demand_properties': json.loads(base64.b64decode(data["demand_properties"].encode('ascii')).decode("utf-8")),
                 'demand_constraints': base64.b64decode(data["demand_constraints"].encode('ascii')).decode("utf-8"),
-                'offer_properties': base64.b64decode(data["offer_properties"].encode('ascii')).decode("utf-8"),
+                'offer_properties': json.loads(base64.b64decode(data["offer_properties"].encode('ascii')).decode("utf-8")),
                 'offer_constraints': base64.b64decode(data["offer_constraints"].encode('ascii')).decode("utf-8"),
 
                 'creation_ts': data["creation_ts"],
