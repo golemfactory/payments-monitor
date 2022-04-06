@@ -39,12 +39,6 @@ class ProviderNode(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
-class Agreement(models.Model):
-    agreement_id = models.CharField(max_length=128, primary_key=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    provider_node = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
-
-
 class Payment(models.Model):
     # unique id is generated from unique triple below.
     # Django has poor support of multiple column primary key so created this one
@@ -106,6 +100,17 @@ class Invoice(models.Model):
         'api.Payment', on_delete=models.CASCADE, null=True, blank=True)
 
 
+class Agreement(models.Model):
+    agreement_id = models.CharField(max_length=128, primary_key=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    provider_node = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
+
+    amount_due = models.CharField(max_length=64, default='0')
+    amount_accepted = models.CharField(max_length=64, default='0')
+    amount_scheduled = models.CharField(max_length=64, default='0')
+    amount_paid = models.CharField(max_length=64, default='0')
+
+
 class Activity(models.Model):
     activity_id = models.UUIDField(primary_key=True)
     provider_node = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
@@ -122,10 +127,7 @@ class Activity(models.Model):
     amount_scheduled = models.CharField(max_length=64, default='0')
     amount_paid = models.CharField(max_length=64, default='0')
 
-    invoice = models.ForeignKey(
-        Invoice, null=True, blank=True, on_delete=models.CASCADE)
     agreement = models.ForeignKey(
         Agreement, null=True, blank=True, on_delete=models.CASCADE)
     task_status = models.CharField(max_length=64)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-

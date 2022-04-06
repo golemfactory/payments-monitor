@@ -30,18 +30,36 @@ def agreement_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
+
         providerObj, providerObjCreated = Provider.objects.get_or_create(
-            wallet_address=data['provider']['wallet_address'], project=project)
+            wallet_address=data['provider']['wallet_address'],
+            project=project
+        )
         if "name" in data['provider']:
             providerObj.name = data['provider']['name']
             providerObj.save()
         else:
             providerObj.save()
+
         providerNodeObj, providerNodeObjcreated = ProviderNode.objects.get_or_create(
-            node_id=data['provider']['provider_id'], subnet=data['provider']['subnet'], project=project,
-            linked_provider=providerObj)
+            node_id=data['provider']['provider_id'],
+            subnet=data['provider']['subnet'],
+            project=project,
+            linked_provider=providerObj
+        )
+
         Agreement.objects.get_or_create(
-            agreement_id=data['agreement_id'], project=project, provider_node=providerNodeObj)
+            agreement_id=data['agreement_id'],
+            project=project,
+            provider_node=providerNodeObj,
+            defaults={
+                'amount_due': data['amount_due'],
+                'amount_accepted': data['amount_accepted'],
+                'amount_scheduled': data['amount_scheduled'],
+                'amount_paid': data['amount_paid']
+            }
+        )
+
         return HttpResponse(status=201)
     elif request.method == 'GET':
         project = Project.objects.get(apikey=apikey)
@@ -221,10 +239,6 @@ def activity_endpoint(request, apikey):
             project=project
         )
 
-        invoice = None
-        if "invoice_id" in data:
-            invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
-
         agreement_obj = Agreement.objects.get(agreement_id=data['agreement_id'])
 
         activity, created = Activity.objects.update_or_create(
@@ -240,7 +254,6 @@ def activity_endpoint(request, apikey):
                 'provider_node': provider_node_obj,
                 'requestor_node': requestor_agent,
                 'agreement': agreement_obj,
-                'invoice': invoice,
                 'amount_due': data['amount_due'],
                 'amount_accepted': data['amount_accepted'],
                 'amount_scheduled': data['amount_scheduled'],
