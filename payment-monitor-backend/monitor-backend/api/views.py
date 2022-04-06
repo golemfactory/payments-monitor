@@ -76,8 +76,8 @@ def invoice_endpoint(request, apikey):
 
             payment, _ = Payment.objects.update_or_create(
                 id=payment_id,
+                project=project,
                 defaults={
-                    'project': project,
                     'network': data['payment']['network'],
                     'nonce': data['payment']['nonce'],
                     'sender': sender,
@@ -104,6 +104,7 @@ def invoice_endpoint(request, apikey):
 
         invoice, _ = Invoice.objects.update_or_create(
             invoice_id=data['invoice_id'],
+            project=project,
             defaults={
                 'amount': data['amount'],
                 'issuer_id': data['issuer_id'],
@@ -111,7 +112,6 @@ def invoice_endpoint(request, apikey):
                 'payment_platform': data['payment_platform'],
                 'is_debit_note': data['is_debit_note'],
                 'agreement': agreement,
-                'project': project,
                 'linked_payment': payment,
             })
 
@@ -152,8 +152,8 @@ def payment_endpoint(request, apikey):
                                              sender=data['sender'], recipient=data['recipient'],
                                              glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'],
                                              gasPrice=data['gas_price'], gasPriceGwei=[
-                'gas_price_gwei'],
-                linked_invoice=invoice)
+                    'gas_price_gwei'],
+                                             linked_invoice=invoice)
             invoice.linked_payment = payment
             invoice.save()
         return HttpResponse(status=201)
@@ -210,13 +210,13 @@ def activity_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
-        requestorAgent, _ = RequestorAgent.objects.get_or_create(
+        requestor_agent, _ = RequestorAgent.objects.get_or_create(
             requestor_id=data['requestor']['requestor_id'],
             wallet_address=data['requestor']['wallet_address'],
             node_name=data['requestor']['node_name'],
             project=project)
 
-        providerNodeObj = ProviderNode.objects.get(
+        provider_node_obj = ProviderNode.objects.get(
             node_id=data['provider']['provider_id'],
             project=project
         )
@@ -225,14 +225,28 @@ def activity_endpoint(request, apikey):
         if "invoice_id" in data:
             invoice = Invoice.objects.get(invoice_id=data['invoice_id'])
 
-        agreementObj = Agreement.objects.get(agreement_id=data['agreement_id'])
+        agreement_obj = Agreement.objects.get(agreement_id=data['agreement_id'])
 
-        activity = Activity.objects.create(project=project, task_status=data['task_status'], job_cost=data['job_cost'],
-                                           cpu_time=data['cpu_time'], job_unit=data['job_unit'],
-                                           job_quantity=data['job_quantity'], job_name=data['job_name'],
-                                           provider_node=providerNodeObj, requestor_node=requestorAgent,
-                                           agreement=agreementObj, activity_id=data['activity_id'],
-                                           invoice=invoice)
+        activity, created = Activity.objects.update_or_create(
+            activity_id=data['activity_id'],
+            project=project,
+            defaults={
+                'task_status': data['task_status'],
+                'job_cost': data['job_cost'],
+                'cpu_time': data['cpu_time'],
+                'job_unit': data['job_unit'],
+                'job_quantity': data['job_quantity'],
+                'job_name': data['job_name'],
+                'provider_node': provider_node_obj,
+                'requestor_node': requestor_agent,
+                'agreement': agreement_obj,
+                'invoice': invoice,
+                'amount_due': data['amount_due'],
+                'amount_accepted': data['amount_accepted'],
+                'amount_scheduled': data['amount_scheduled'],
+                'amount_paid': data['amount_paid']
+            }
+        )
 
         return HttpResponse(status=201)
     elif request.method == 'PATCH':

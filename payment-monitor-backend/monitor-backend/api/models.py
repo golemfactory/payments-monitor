@@ -116,9 +116,16 @@ class Activity(models.Model):
     job_unit = models.CharField(max_length=64)
     cpu_time = models.FloatField()
     job_cost = models.FloatField()
+
+    amount_due = models.CharField(max_length=64, default='0')
+    amount_accepted = models.CharField(max_length=64, default='0')
+    amount_scheduled = models.CharField(max_length=64, default='0')
+    amount_paid = models.CharField(max_length=64, default='0')
+
     invoice = models.ForeignKey(
         Invoice, null=True, blank=True, on_delete=models.CASCADE)
     agreement = models.ForeignKey(
         Agreement, null=True, blank=True, on_delete=models.CASCADE)
     task_status = models.CharField(max_length=64)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
