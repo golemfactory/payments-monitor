@@ -1,3 +1,4 @@
+import base64
 from operator import inv
 from django.http import HttpResponse, JsonResponse
 import json
@@ -31,7 +32,7 @@ def agreement_endpoint(request, apikey):
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
 
-        providerObj, providerObjCreated = Provider.objects.get_or_create(
+        providerObj, providerObjCreated = Provider.objects.update_or_create(
             wallet_address=data['provider']['wallet_address'],
             project=project
         )
@@ -41,14 +42,14 @@ def agreement_endpoint(request, apikey):
         else:
             providerObj.save()
 
-        providerNodeObj, providerNodeObjcreated = ProviderNode.objects.get_or_create(
+        providerNodeObj, providerNodeObjcreated = ProviderNode.objects.update_or_create(
             node_id=data['provider']['provider_id'],
             subnet=data['provider']['subnet'],
             project=project,
             linked_provider=providerObj
         )
 
-        Agreement.objects.get_or_create(
+        Agreement.objects.update_or_create(
             agreement_id=data['agreement_id'],
             project=project,
             provider_node=providerNodeObj,
@@ -56,7 +57,16 @@ def agreement_endpoint(request, apikey):
                 'amount_due': data['amount_due'],
                 'amount_accepted': data['amount_accepted'],
                 'amount_scheduled': data['amount_scheduled'],
-                'amount_paid': data['amount_paid']
+                'amount_paid': data['amount_paid'],
+                'state': data['state'],
+                'demand_properties': base64.b64decode(data["demand_properties"].encode('ascii')).decode("utf-8"),
+                'demand_constraints': base64.b64decode(data["demand_constraints"].encode('ascii')).decode("utf-8"),
+                'offer_properties': base64.b64decode(data["offer_properties"].encode('ascii')).decode("utf-8"),
+                'offer_constraints': base64.b64decode(data["offer_constraints"].encode('ascii')).decode("utf-8"),
+
+                'creation_ts': data["creation_ts"],
+                'approved_ts': data["approved_ts"],
+                'valid_to': data["valid_to"]
             }
         )
 
@@ -228,11 +238,14 @@ def activity_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
-        requestor_agent, _ = RequestorAgent.objects.get_or_create(
+        requestor_agent, _ = RequestorAgent.objects.update_or_create(
             requestor_id=data['requestor']['requestor_id'],
-            wallet_address=data['requestor']['wallet_address'],
-            node_name=data['requestor']['node_name'],
-            project=project)
+            project=project,
+            defaults={
+                'wallet_address': data['requestor']['wallet_address'],
+                'node_name': data['requestor']['node_name']
+            }
+        )
 
         provider_node_obj = ProviderNode.objects.get(
             node_id=data['provider']['provider_id'],
@@ -287,10 +300,10 @@ def providernode_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
-        providerObj, providerObjCreated = Provider.objects.get_or_create(
+        providerObj, providerObjCreated = Provider.objects.update_or_create(
             wallet_address=data['wallet_address'], project=project)
 
-        providerNodeObj = ProviderNode.objects.get_or_create(
+        providerNodeObj = ProviderNode.objects.update_or_create(
             node_id=data['provider_id'], node_name=data['name'], subnet=data['subnet'], project=project,
             linked_provider=providerObj)
         return HttpResponse(status=201)

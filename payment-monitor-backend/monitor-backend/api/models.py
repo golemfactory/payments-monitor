@@ -110,6 +110,20 @@ class Agreement(models.Model):
     amount_scheduled = models.CharField(max_length=64, default='0')
     amount_paid = models.CharField(max_length=64, default='0')
 
+    state = models.CharField(max_length=64, default='UNKNOWN')
+
+    demand_properties = models.JSONField(default='{}')
+    demand_constraints = models.TextField(default='')
+    offer_properties = models.JSONField(default='{}')
+    offer_constraints = models.TextField(default='')
+
+    creation_ts = models.DateTimeField(null=True)
+    approved_ts = models.DateTimeField(null=True)
+    valid_to = models.DateTimeField(null=True)
+
+
+
+
 
 class Activity(models.Model):
     activity_id = models.UUIDField(primary_key=True)
