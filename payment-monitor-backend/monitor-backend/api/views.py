@@ -270,7 +270,8 @@ def activity_endpoint(request, apikey):
                 'amount_due': data['amount_due'],
                 'amount_accepted': data['amount_accepted'],
                 'amount_scheduled': data['amount_scheduled'],
-                'amount_paid': data['amount_paid']
+                'amount_paid': data['amount_paid'],
+                'usage_cost': data['usage_cost']
             }
         )
 
