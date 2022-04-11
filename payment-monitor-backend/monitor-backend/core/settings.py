@@ -32,7 +32,7 @@ else:
 if SECRET_KEY == None:
     SECRET_KEY = "testing"
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['api.localhost', 'localhost',
                  'pmonitor.golem.network', 'api.pmonitor.golem.network']
