@@ -82,13 +82,42 @@ def agreement_endpoint(request, apikey):
         return HttpResponse(status=400)
 
 
+@csrf_exempt
+def agreement_to_invoice(request, agreement_id):
+    if request.method == 'GET':
+        agreement = Agreement.objects.get(agreement_id=agreement_id)
+        invoice = Invoice.objects.filter(agreement=agreement).values()
+        return JsonResponse(list(invoice), json_dumps_params={'indent': 4}, safe=False)
+    else:
+        return HttpResponse(status=400)
+
+
+@csrf_exempt
+def agreement_to_activity(request, agreement_id):
+    if request.method == 'GET':
+        agreement = Agreement.objects.get(agreement_id=agreement_id)
+        activity = Activity.objects.filter(agreement=agreement).values()
+        data = []
+        for obj in activity:
+            provider = ProviderNode.objects.get(id=obj['provider_node_id'])
+            obj.update({'provider': {
+                'provider_node': provider.node_id,
+                'node_name': provider.node_name,
+                'subnet': provider.subnet
+            }})
+            data.append(obj)
+        return JsonResponse(data, json_dumps_params={'indent': 4}, safe=False)
+    else:
+        return HttpResponse(status=400)
+
+
 def get_payment_id(sender, network, nonce):
     payload = sender + "_" + str(network) + "_" + str(nonce)
     payment_id = hashlib.sha1(payload.encode('utf-8')).hexdigest()
     return payment_id
 
 
-@csrf_exempt
+@ csrf_exempt
 def invoice_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -165,7 +194,7 @@ def invoice_endpoint(request, apikey):
         return HttpResponse(status=400)
 
 
-@csrf_exempt
+@ csrf_exempt
 def payment_endpoint(request, apikey):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -180,8 +209,8 @@ def payment_endpoint(request, apikey):
                                              sender=data['sender'], recipient=data['recipient'],
                                              glm=data['glm'], matic=data['matic'], gasUsed=data['gas_used'],
                                              gasPrice=data['gas_price'], gasPriceGwei=[
-                    'gas_price_gwei'],
-                                             linked_invoice=invoice)
+                'gas_price_gwei'],
+                linked_invoice=invoice)
             invoice.linked_payment = payment
             invoice.save()
         return HttpResponse(status=201)
@@ -252,7 +281,8 @@ def activity_endpoint(request, apikey):
             project=project
         )
 
-        agreement_obj = Agreement.objects.get(agreement_id=data['agreement_id'])
+        agreement_obj = Agreement.objects.get(
+            agreement_id=data['agreement_id'])
 
         activity, created = Activity.objects.update_or_create(
             activity_id=data['activity_id'],
