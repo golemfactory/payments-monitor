@@ -1,131 +1,114 @@
-import Head from "next/head"
-import Image from "next/image"
-import React, { useState, useEffect } from "react"
+import Link from "next/link"
 
-export default function Form() {
-  const [data, setData] = useState(null)
-  const [isLoading, setLoading] = useState(false)
-  const registerUser = (event) => {
-    event.preventDefault() // don't redirect the page
-    fetch("https://api.pmonitor.golem.network/v1/payment/" + event.target.apikey.value)
-      .then((r) => r.json())
-
-      .then((data) => {
-        setData(data)
-        setLoading(false)
-
-        // var svg = document.getElementById("SVG")
-        // console.log(svg)
-        // var bbox = svg.getBBox()
-        // var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ")
-        // svg.setAttribute("viewBox", viewBox)
-        // prompt("Copy to clipboard: Ctrl+C, Enter", svg.outerHTML)
-      })
-  }
-
-  if (isLoading) return <p>Loading...</p>
-  if (!data)
-    return (
-      <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">View Payments</h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            <p className="font-medium text-indigo-600 hover:text-indigo-500">Back to dashboard</p>
-          </p>
-        </div>
-
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={registerUser}>
-              <div>
-                <label htmlFor="apikey" className="block text-sm font-medium text-gray-700">
-                  Project API Key
-                </label>
-                <div className="mt-1">
-                  <input
-                    id="apikey"
-                    name="apikey"
-                    type="text"
-                    required
-                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-golemblue hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  See Payments
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    )
-
+function Page({ data }) {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">Payments</h1>
-          <p className="mt-2 text-sm text-gray-700">A list of all payments.</p>
-        </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-golemblue px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
-          >
-            Add Payment
-          </button>
-        </div>
-      </div>
-      <div className="mt-8 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                      Sender
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      GLM spent
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      MATIC spent
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Transaction Hash
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                      <span className="sr-only">View</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white">
-                  {data.map((row) => (
-                    <tr key={row.id} className="bg-gray-50">
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{row.sender}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.amount_human}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.gas_spent_human}</td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.final_tx}</td>
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                          View<span className="sr-only">, {row.yagna_time_confirmed}</span>
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <div className="grid grid-cols-12 gap-x-4">
+        <div className="col-span-12 grid grid-cols-12 bg-white shadow p-4 mb-4 rounded-lg"></div>
+        <div className="col-span-12 text-center grid grid-cols-12 ">
+          <table className="min-w-full divide-y divide-gray-300">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                  Agreement ID
+                </th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  GLM spent
+                </th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  Details
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {data.map((row) => (
+                <tr key={row.agreement_id} className="bg-gray-50">
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">{row.agreement_id}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{row.amount_paid}</td>
+                  <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                    <Link
+                      href={{
+                        pathname: `/agreement/` + row.agreement_id,
+                      }}
+                    >
+                      <a className="text-indigo-600 hover:text-indigo-900">
+                        View<span className="sr-only">, </span>
+                      </a>
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* {invoices.map((row) => (
+            <div key={row.invoice_id} className="bg-white col-span-12 rounded shadow">
+              <h2 className="text-2xl text-center col-span-12 py-2 font-bold">Invoice</h2>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Invoice ID {""}
+                <span className="text-gray-400 text-sm">{row.invoice_id}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Payment Status {""}
+                <span className="text-gray-400 text-sm">{row.invoice_status}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                GLM amount {""}
+                <span className="text-gray-400 text-sm">{row.amount}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Issuer ID {""}
+                <span className="text-gray-400 text-sm">{row.issuer_id}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Payment Platform {""}
+                <span className="text-gray-400 text-sm">{row.payment_platform}</span>
+              </p>
             </div>
-          </div>
+          ))} */}
+        </div>
+        <div className="col-span-6 text-center grid grid-cols-12 ">
+          {/* {activites.map((row) => (
+            <div key={row.activity_id} className="bg-white col-span-12 rounded shadow">
+              <h2 className="text-2xl text-center col-span-12 py-2 font-bold">Activity</h2>
+              <p className="block py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Provider Node ID {""}
+                <span className="inline-block text-gray-400 text-sm">{row.provider.node_name}</span>
+              </p>
+              <p className="block py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Subnet {""}
+                <span className="inline-block text-gray-400 text-sm">{row.provider.subnet}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Job Name {""}
+                <span className="text-gray-400 text-sm">{row.job_name}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Job Unit {""}
+                <span className="text-gray-400 text-sm">{row.job_unit}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                Job Quantity {""}
+                <span className="text-gray-400 text-sm">{row.job_quantity}</span>
+              </p>
+              <p className=" py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                GLM Amount <span className="text-gray-400 text-sm">{row.amount_due}</span>
+              </p>
+            </div>
+          ))} */}
         </div>
       </div>
     </div>
   )
 }
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`https://api.pmonitor.golem.network/v1/agreement/296d483f-68c7-4811-9421-580cbba74095`)
+  const data = await res.json()
+
+  // Pass data to the page via props
+  return { props: { data } }
+}
+
+export default Page

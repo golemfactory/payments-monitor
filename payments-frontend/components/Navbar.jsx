@@ -1,11 +1,6 @@
 import Link from "next/link"
 
-const navigation = [
-  { name: "Activites", href: "/activites" },
-  { name: "Payments", href: "/payments" },
-  { name: "Invoices", href: "/invoices" },
-  { name: "Provider", href: "/provider" },
-]
+const navigation = [{ name: "Home", href: "/" }]
 
 export default function Example() {
   return (
