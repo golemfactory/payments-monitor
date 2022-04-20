@@ -15,3 +15,4 @@ aioredis==2.0.0a1
 daphne
 aiohttp
 web3
+djangorestframework-simplejwt
