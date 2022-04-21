@@ -4,3 +4,4 @@ DB_PASSWORD=changeme
 DB_USER=changeme
 DATABASE=changeme
 DJANGO_SECRET=generateme
+JWT_SIGNING_KEY=generateme
