@@ -12,7 +12,7 @@ export async function getServerSideProps(ctx) {
   if (session) {
     // Signed in
 
-    const res = await fetch(process.env.API_BASE + "v1/projects", {
+    const res = await fetch(process.env.NEXT_PUBLIC_API_BASE + "v1/projects", {
       method: "get",
       headers: new Headers({
         Authorization: "Bearer " + session.user.accessToken,
@@ -43,7 +43,8 @@ function Page({ projects }) {
 
   const createProject = async (event) => {
     event.preventDefault() // don't redirect the page
-    const save_project = await postData(process.env.API_BASE + "v1/projects", "post", { name: event.target.name.value })
+    let url = process.env.NEXT_PUBLIC_API_BASE + "v1/projects"
+    const save_project = await postData(url, "post", { name: event.target.name.value })
     if (save_project.status == 201) {
       const returned_data = await save_project.json()
       project.push(returned_data)

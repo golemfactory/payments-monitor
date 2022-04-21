@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 
 async function refreshAccessToken(token) {
   try {
-    const url = process.env.API_BASE + "api/token/refresh/"
+    const url = process.env.NEXT_PUBLIC_API_BASE + "api/token/refresh/"
     const res = await fetch(url, {
       method: "POST",
       body: JSON.stringify({ refresh: token }),
@@ -48,7 +48,7 @@ export default NextAuth({
       },
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
-        const res = await fetch(process.env.API_BASE + "api/token/", {
+        const res = await fetch(process.env.NEXT_PUBLIC_API_BASE + "api/token/", {
           method: "POST",
           body: JSON.stringify(credentials),
           headers: {
