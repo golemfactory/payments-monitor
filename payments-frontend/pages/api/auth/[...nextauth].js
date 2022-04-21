@@ -19,7 +19,7 @@ async function refreshAccessToken(token) {
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpires: new Date().getTime() / 1000 + 20, // add 300 seconds
+      accessTokenExpires: new Date().getTime() / 1000 + 299, // add 300 seconds
       refreshTokenExpires: new Date().getTime() / 1000 + 86300,
       refreshToken: refreshedTokens.refresh ?? token.refresh, // Fall back to old refresh token
     }
@@ -88,7 +88,7 @@ export default NextAuth({
         return {
           ...token,
           accessToken: user.access,
-          accessTokenExpires: new Date().getTime() / 1000 + 20, // add 300 seconds
+          accessTokenExpires: new Date().getTime() / 1000 + 299, // add 300 seconds
           refreshTokenExpires: new Date().getTime() / 1000 + 86300,
           refreshToken: user.refresh,
         }
