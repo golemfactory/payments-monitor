@@ -8,7 +8,7 @@ app_name = 'api'
 urlpatterns = [
     path('payment/<apikey>', views.payment_endpoint),
     path('projects', views.projects.as_view()),
-    path('agreement/<apikey>', views.agreement_endpoint),
+    path('agreement/<apikey>', views.agreement_endpoint.as_view()),
     path('provider/<apikey>', views.provider_endpoint),
     path('providernode/<apikey>', views.providernode_endpoint),
     path('invoice/<apikey>', views.invoice_endpoint),

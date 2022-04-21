@@ -13,25 +13,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 
-@sync_to_async
-@csrf_exempt
-@async_to_sync
-async def process_payment(request, apikey):
-    """
-    Endpoint to receive payment info and send it to the celery workers for checking.
-    """
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        check_tx_status.delay(
-            data['tx'], data['key'])
-        return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
+class agreement_endpoint(APIView):
+    permission_classes = (IsAuthenticated,)
 
+    def get(self, request, apikey):
+        project = Project.objects.get(apikey=apikey)
+        agreement = Agreement.objects.filter(project=project).values()
+        if agreement:
+            return JsonResponse(list(agreement), json_dumps_params={'indent': 4}, safe=False)
+        else:
+            return HttpResponse(status=404)
 
-@csrf_exempt
-def agreement_endpoint(request, apikey):
-    if request.method == 'POST':
+    def post(self, request, apikey):
         data = json.loads(request.body)
         project = Project.objects.get(apikey=apikey)
 
@@ -74,15 +67,6 @@ def agreement_endpoint(request, apikey):
         )
 
         return HttpResponse(status=201)
-    elif request.method == 'GET':
-        project = Project.objects.get(apikey=apikey)
-        agreement = Agreement.objects.filter(project=project).values()
-        if agreement:
-            return JsonResponse(list(agreement), json_dumps_params={'indent': 4}, safe=False)
-        else:
-            return HttpResponse(status=403)
-    else:
-        return HttpResponse(status=400)
 
 
 @csrf_exempt
