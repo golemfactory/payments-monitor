@@ -43,7 +43,7 @@ function Page({ projects }) {
 
   const createProject = async (event) => {
     event.preventDefault() // don't redirect the page
-    const save_project = await postData("http://api.localhost/v1/projects", "post", { name: event.target.name.value })
+    const save_project = await postData(process.env.API_BASE + "v1/projects", "post", { name: event.target.name.value })
     if (save_project.status == 201) {
       const returned_data = await save_project.json()
       project.push(returned_data)
