@@ -130,32 +130,32 @@ services:
         condition: on-failure
     networks:
       - swarm-example
-  nginx:
-    image: phillipjensen/payment-monitor-nginx:latest
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.nginx.rule=Host(`pmonitor.golem.network`)
-        - traefik.http.routers.nginx.entrypoints=web
-        - traefik.http.services.nginx.loadbalancer.server.port=80
-        - traefik.http.routers.nginx.service=nginx@docker
-        - traefik.docker.network=swarm-example
-        - traefik.http.routers.nginx.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.nginx-web-secure.rule=Host(`pmonitor.golem.network`)
-        - traefik.http.routers.nginx-web-secure.tls=true
-        - traefik.http.routers.nginx-web-secure.entrypoints=web-secure
-        - traefik.http.middlewares.nginx_compress.compress=true
-        - traefik.http.routers.nginx-web-secure.middlewares=nginx_compress
-        - traefik.http.routers.nginx.middlewares=nginx_compress
-      replicas: 3
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 2s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
+  # nginx:
+  #   image: phillipjensen/payment-monitor-nginx:latest
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.nginx.rule=Host(`pmonitor.golem.network`)
+  #       - traefik.http.routers.nginx.entrypoints=web
+  #       - traefik.http.services.nginx.loadbalancer.server.port=80
+  #       - traefik.http.routers.nginx.service=nginx@docker
+  #       - traefik.docker.network=swarm-example
+  #       - traefik.http.routers.nginx.tls.certresolver=letsencryptresolver
+  #       - traefik.http.routers.nginx-web-secure.rule=Host(`pmonitor.golem.network`)
+  #       - traefik.http.routers.nginx-web-secure.tls=true
+  #       - traefik.http.routers.nginx-web-secure.entrypoints=web-secure
+  #       - traefik.http.middlewares.nginx_compress.compress=true
+  #       - traefik.http.routers.nginx-web-secure.middlewares=nginx_compress
+  #       - traefik.http.routers.nginx.middlewares=nginx_compress
+  #     replicas: 3
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 2s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
   redis:
     image: "redis:alpine"
     command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]

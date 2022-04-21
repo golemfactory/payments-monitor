@@ -5,34 +5,34 @@ volumes:
   prometheus_data: {}
   grafana_data: {}
 services:
-  pgadmin:
-    image: dpage/pgadmin4
-    links:
-      - postgres
-    depends_on:
-      - postgres
-    environment:
-      PGADMIN_DEFAULT_EMAIL: 123@123.com
-      PGADMIN_DEFAULT_PASSWORD: 123
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)
-        - traefik.http.routers.pgadmin.entrypoints=web
-        - traefik.http.services.pgadmin.loadbalancer.server.port=80
-        - traefik.http.routers.pgadmin.service=pgadmin@docker
-        - traefik.docker.network=swarm-example
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   links:
+  #     - postgres
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: 123@123.com
+  #     PGADMIN_DEFAULT_PASSWORD: 123
+  #   volumes:
+  #     - pgadmin:/var/lib/pgadmin
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)
+  #       - traefik.http.routers.pgadmin.entrypoints=web
+  #       - traefik.http.services.pgadmin.loadbalancer.server.port=80
+  #       - traefik.http.routers.pgadmin.service=pgadmin@docker
+  #       - traefik.docker.network=swarm-example
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
   traefik:
     image: traefik:latest
     ports:
@@ -115,83 +115,83 @@ services:
   #       condition: on-failure
   #   networks:
   #     - swarm-example
-  nginx:
-    build:
-      context: .
-      dockerfile: payment-monitor-backend/dockerfiles/Nginx
-    image: payments-nginx:latest
-    volumes:
-      - ./payment-monitor-backend/monitor-backend/staticfiles:/static
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.nginx.rule=Host(`localhost`)
-        - traefik.http.routers.nginx.entrypoints=web
-        - traefik.http.services.nginx.loadbalancer.server.port=80
-        - traefik.http.routers.nginx.service=nginx@docker
-        - traefik.docker.network=swarm-example
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
-  redis:
-    image: "redis:alpine"
-    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
-    expose:
-      - "6379"
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
-  celery:
-    build:
-      context: payment-monitor-backend/.
-      dockerfile: dockerfiles/Celery
-    image: payment-celery:latest
-    volumes:
-      - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
-    env_file:
-      - ./.envs/.django
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
-  celery_beat:
-    build:
-      context: payment-monitor-backend/.
-      dockerfile: dockerfiles/Beat
-    image: payment-celery-beat:latest
-    volumes:
-      - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
-    env_file:
-      - ./.envs/.django
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
+  # nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: payment-monitor-backend/dockerfiles/Nginx
+  #   image: payments-nginx:latest
+  #   volumes:
+  #     - ./payment-monitor-backend/monitor-backend/staticfiles:/static
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.nginx.rule=Host(`localhost`)
+  #       - traefik.http.routers.nginx.entrypoints=web
+  #       - traefik.http.services.nginx.loadbalancer.server.port=80
+  #       - traefik.http.routers.nginx.service=nginx@docker
+  #       - traefik.docker.network=swarm-example
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
+  # redis:
+  #   image: "redis:alpine"
+  #   command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
+  #   expose:
+  #     - "6379"
+  #   deploy:
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
+  # celery:
+  #   build:
+  #     context: payment-monitor-backend/.
+  #     dockerfile: dockerfiles/Celery
+  #   image: payment-celery:latest
+  #   volumes:
+  #     - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
+  #   env_file:
+  #     - ./.envs/.django
+  #   deploy:
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
+  # celery_beat:
+  #   build:
+  #     context: payment-monitor-backend/.
+  #     dockerfile: dockerfiles/Beat
+  #   image: payment-celery-beat:latest
+  #   volumes:
+  #     - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
+  #   env_file:
+  #     - ./.envs/.django
+  #   deploy:
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
   postgres:
     image: postgres:13.4-alpine
     env_file:
