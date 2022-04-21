@@ -8,6 +8,9 @@ from .tasks import check_tx_status
 from django.views.decorators.csrf import csrf_exempt
 from asgiref.sync import async_to_sync, sync_to_async
 import hashlib
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 
 @sync_to_async
@@ -347,3 +350,31 @@ def providernode_endpoint(request, apikey):
             return HttpResponse(status=403)
     else:
         return HttpResponse(status=400)
+
+
+# @api_view(['GET'])
+# @csrf_exempt
+# @permission_classes([IsAuthenticated])
+# def projects(request):
+#     if request.method == 'GET':
+#         projects = Project.objects.filter(owner=request.user).values()
+#         return JsonResponse(list(projects), json_dumps_params={'indent': 4}, safe=False)
+#     # elif request.method == 'POST':
+#     #     data = json.loads(request.body)
+#     #     project = Project.objects.create(name=data['name'], owner=request.user)
+#     #     return JsonResponse(list(project), json_dumps_params={'indent': 4}, safe=False)
+#     # else:
+#     #     return HttpResponse(status=400)
+
+
+class projects(APIView):
+    permission_classes = (IsAuthenticated,)             # <-- And here
+
+    def get(self, request):
+        projects = Project.objects.filter(owner=request.user).values()
+        return JsonResponse(list(projects), json_dumps_params={'indent': 4}, safe=False)
+
+    def post(self, request):
+        data = json.loads(request.body)
+        project = Project.objects.create(name=data['name'], owner=request.user)
+        return Response(status=201, data={'status': 'created', 'id': project.id, 'name': project.name, 'owner': project.owner.username, 'apikey': project.apikey})
