@@ -139,59 +139,59 @@ services:
   #       condition: on-failure
   #   networks:
   #     - swarm-example
-  # redis:
-  #   image: "redis:alpine"
-  #   command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
-  #   expose:
-  #     - "6379"
-  #   deploy:
-  #     replicas: 1
-  #     update_config:
-  #       parallelism: 1
-  #       failure_action: rollback
-  #       delay: 10s
-  #     restart_policy:
-  #       condition: on-failure
-  #   networks:
-  #     - swarm-example
-  # celery:
-  #   build:
-  #     context: payment-monitor-backend/.
-  #     dockerfile: dockerfiles/Celery
-  #   image: payment-celery:latest
-  #   volumes:
-  #     - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
-  #   env_file:
-  #     - ./.envs/.django
-  #   deploy:
-  #     replicas: 1
-  #     update_config:
-  #       parallelism: 1
-  #       failure_action: rollback
-  #       delay: 10s
-  #     restart_policy:
-  #       condition: on-failure
-  #   networks:
-  #     - swarm-example
-  # celery_beat:
-  #   build:
-  #     context: payment-monitor-backend/.
-  #     dockerfile: dockerfiles/Beat
-  #   image: payment-celery-beat:latest
-  #   volumes:
-  #     - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
-  #   env_file:
-  #     - ./.envs/.django
-  #   deploy:
-  #     replicas: 1
-  #     update_config:
-  #       parallelism: 1
-  #       failure_action: rollback
-  #       delay: 10s
-  #     restart_policy:
-  #       condition: on-failure
-  #   networks:
-  #     - swarm-example
+  redis:
+    image: "redis:alpine"
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
+    expose:
+      - "6379"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  celery:
+    build:
+      context: payment-monitor-backend/.
+      dockerfile: dockerfiles/Celery
+    image: payment-celery:latest
+    volumes:
+      - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
+    env_file:
+      - ./.envs/.django
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
+  celery_beat:
+    build:
+      context: payment-monitor-backend/.
+      dockerfile: dockerfiles/Beat
+    image: payment-celery-beat:latest
+    volumes:
+      - "./payment-monitor-backend/monitor-backend:/monitor-backend/"
+    env_file:
+      - ./.envs/.django
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - swarm-example
   postgres:
     image: postgres:13.4-alpine
     env_file:
