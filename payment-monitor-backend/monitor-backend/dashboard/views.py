@@ -1,20 +1,26 @@
-from api.models import Payment
+from api.models import Payment, Invoice, Activity
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from api.models import Project
-# Create your views here.
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from django.http import HttpResponse, JsonResponse
+from django.db.models import Sum
 
 
-@login_required
-def dashboard(request):
-    # payments = Payment.objects.filter(user=request.user)
-    project = Project.objects.create(name="test1", owner=request.user)
-    # print(payments.glm.count())
-    glm_spent = 0.0
-    matic_spent = 0.0
-    # for payment in payments:
-    #     if payment.glm != None:
-    #         glm_spent += payment.glm
-    #         matic_spent += payment.matic
-    print(matic_spent)
-    return render(request, "dashboard.html", {'apikey': request.user.apikey,  "project": project.apikey})
+class project_overview(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, apikey):
+        project = Project.objects.get(apikey=apikey)
+        payments = Payment.objects.filter(project=project)
+        invoices = Invoice.objects.filter(
+            project=project).aggregate(Sum('amount'))
+        activites = Activity.objects.filter(
+            project=project).count()
+        spendings = {'spendings_glm': 0, 'spendings_matic': 0}
+        for obj in payments:
+            spendings['spendings_glm'] += obj.amount_human
+            spendings['spendings_matic'] += obj.gas_spent_human
+        return Response(status=201, data={"spendings": spendings, "provider_invoiced_amount": invoices, "activity_count": activites})

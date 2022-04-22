@@ -89,7 +89,7 @@ class Payment(models.Model):
 
 class Invoice(models.Model):
     invoice_id = models.UUIDField(primary_key=True)
-    amount = models.CharField(max_length=128)
+    amount = models.FloatField(max_length=128)
     issuer_id = models.CharField(max_length=42)
     payment_platform = models.CharField(max_length=64)
     agreement = models.ForeignKey('api.Agreement', on_delete=models.CASCADE)
@@ -122,9 +122,6 @@ class Agreement(models.Model):
     valid_to = models.DateTimeField(null=True)
 
 
-
-
-
 class Activity(models.Model):
     activity_id = models.UUIDField(primary_key=True)
     provider_node = models.ForeignKey(ProviderNode, on_delete=models.CASCADE)
@@ -147,4 +144,3 @@ class Activity(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     usage_cost = models.JSONField(default='{}')
-

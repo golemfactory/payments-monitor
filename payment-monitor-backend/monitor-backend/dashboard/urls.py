@@ -6,5 +6,6 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
-    path('', views.dashboard, name="dashboard"),
+    path('project/<apikey>', views.project_overview.as_view(),
+         name="project_overview"),
 ]

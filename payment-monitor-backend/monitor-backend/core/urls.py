@@ -26,7 +26,7 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('v1/', include('api.urls')),
-    path('', include('dashboard.urls')),
+    path('dashboard/', include('dashboard.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path("accounts/signup", signup, name="register"),
