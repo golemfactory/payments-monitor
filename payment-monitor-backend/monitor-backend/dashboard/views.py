@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Sum
+from api.serializers import PaymentSerializer, ActivitySerializer
 
 
 class project_overview(APIView):
@@ -18,9 +19,11 @@ class project_overview(APIView):
         invoices = Invoice.objects.filter(
             project=project).aggregate(Sum('amount'))
         activites = Activity.objects.filter(
-            project=project).count()
+            project=project)
         spendings = {'spendings_glm': 0, 'spendings_matic': 0}
+        payment_serializer = PaymentSerializer(payments, many=True)
+        activity_serializer = ActivitySerializer(activites, many=True)
         for obj in payments:
             spendings['spendings_glm'] += obj.amount_human
             spendings['spendings_matic'] += obj.gas_spent_human
-        return Response(status=201, data={"spendings": spendings, "provider_invoiced_amount": invoices, "activity_count": activites})
+        return Response(status=200, data={"spendings": spendings, "provider_invoiced_amount": invoices, "payments": payment_serializer.data, "activities": activity_serializer.data})

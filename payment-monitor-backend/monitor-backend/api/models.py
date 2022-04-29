@@ -142,5 +142,6 @@ class Activity(models.Model):
         Agreement, null=True, blank=True, on_delete=models.CASCADE)
     task_status = models.CharField(max_length=64)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     usage_cost = models.JSONField(default='{}')
