@@ -27,3 +27,14 @@ class project_overview(APIView):
             spendings['spendings_glm'] += obj.amount_human
             spendings['spendings_matic'] += obj.gas_spent_human
         return Response(status=200, data={"spendings": spendings, "provider_invoiced_amount": invoices, "payments": payment_serializer.data, "activities": activity_serializer.data})
+
+
+class dashboard(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        project = Project.objects.filter(owner=request.user)
+        activites = Activity.objects.filter(
+            project=project)
+        activity_serializer = ActivitySerializer(activites, many=True)
+        return Response(status=200, data={"spendings": spendings, "provider_invoiced_amount": invoices, "payments": payment_serializer.data, "activities": activity_serializer.data})

@@ -14,8 +14,6 @@ from rest_framework.views import APIView
 
 
 class agreement_endpoint(APIView):
-    permission_classes = (IsAuthenticated,)
-
     def get(self, request, apikey):
         project = Project.objects.get(apikey=apikey)
         agreement = Agreement.objects.filter(project=project).values()

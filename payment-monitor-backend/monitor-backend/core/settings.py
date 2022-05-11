@@ -87,7 +87,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'rest_framework',
     'api',
     'django_celery_beat',
@@ -225,11 +224,3 @@ result_backend = 'redis://redis:6379/0'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATIC_ROOT = "./staticfiles"
-MEDIA_ROOT = './var/media/'
-MEDIA_URL = '/media/'
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
-print(os.path.join(BASE_DIR, 'static'))
