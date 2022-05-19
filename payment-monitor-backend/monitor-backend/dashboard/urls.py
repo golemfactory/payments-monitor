@@ -8,4 +8,6 @@ app_name = 'dashboard'
 urlpatterns = [
     path('project/<apikey>', views.project_overview.as_view(),
          name="project_overview"),
+    path('overview', views.dashboard.as_view(),
+         name="dashboard_overview"),
 ]
