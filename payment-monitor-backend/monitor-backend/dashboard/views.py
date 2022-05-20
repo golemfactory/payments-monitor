@@ -26,7 +26,7 @@ class project_overview(APIView):
         for obj in payments:
             spendings['spendings_glm'] += obj.amount_human
             spendings['spendings_matic'] += obj.gas_spent_human
-        return Response(status=200, data={"spendings": spendings, "provider_invoiced_amount": invoices, "payments": payment_serializer.data, "activities": activity_serializer.data, })
+        return Response(status=200, data={"spendings": spendings, "project_name": project.name, "provider_invoiced_amount": invoices, "payments": payment_serializer.data, "activities": activity_serializer.data, })
 
 
 class dashboard(APIView):
