@@ -94,30 +94,51 @@ services:
         condition: on-failure
     networks:
       - swarm-example
-  nginx:
-    build:
-      context: .
-      dockerfile: payment-monitor-backend/dockerfiles/Nginx
-    image: payments-nginx:latest
-    volumes:
-      - ./payment-monitor-backend/monitor-backend/staticfiles:/static
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.nginx.rule=Host(`localhost`)
-        - traefik.http.routers.nginx.entrypoints=web
-        - traefik.http.services.nginx.loadbalancer.server.port=80
-        - traefik.http.routers.nginx.service=nginx@docker
-        - traefik.docker.network=swarm-example
-      replicas: 1
-      update_config:
-        parallelism: 1
-        failure_action: rollback
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-    networks:
-      - swarm-example
+  # fastapi:
+  #   image: fastapi:latest
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.fastapi.rule=Host(`api.localhost`)
+  #       - traefik.http.routers.fastapi.entrypoints=web
+  #       - "traefik.http.middlewares.fastapi-prefix.stripprefix.prefixes=/fastapi"
+  #       - "traefik.http.routers.fastapi.middlewares=fastapi-prefix"
+  #       - traefik.http.services.fastapi.loadbalancer.server.port=80
+  #       - traefik.http.routers.fastapi.service=fastapi@docker
+  #       - traefik.docker.network=swarm-example
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
+  # nginx:
+  #   build:
+  #     context: .
+  #     dockerfile: payment-monitor-backend/dockerfiles/Nginx
+  #   image: payments-nginx:latest
+  #   volumes:
+  #     - ./payment-monitor-backend/monitor-backend/staticfiles:/static
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.nginx.rule=Host(`localhost`)
+  #       - traefik.http.routers.nginx.entrypoints=web
+  #       - traefik.http.services.nginx.loadbalancer.server.port=80
+  #       - traefik.http.routers.nginx.service=nginx@docker
+  #       - traefik.docker.network=swarm-example
+  #     replicas: 1
+  #     update_config:
+  #       parallelism: 1
+  #       failure_action: rollback
+  #       delay: 10s
+  #     restart_policy:
+  #       condition: on-failure
+  #   networks:
+  #     - swarm-example
   redis:
     image: "redis:alpine"
     command: [sh, -c, "rm -f /data/dump.rdb && redis-server --maxclients 40000 --timeout 60  --save ''"]
@@ -179,6 +200,8 @@ services:
       - "db_data:/var/lib/postgresql/data"
     networks:
       - swarm-example
+    ports:
+      - "5432:5432"
     deploy:
       replicas: 1
       update_config:

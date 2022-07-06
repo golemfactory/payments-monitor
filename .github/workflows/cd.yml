@@ -34,7 +34,6 @@ jobs:
             key: ${{ secrets.KEY }}
             port: ${{ secrets.PORT }}
             script: |
-                docker service update --force --image phillipjensen/payment-monitor-nginx:${{ github.sha }} payments_nginx
                 docker service update --force --image phillipjensen/payment-monitor-backend:${{ github.sha }} payments_django
                 docker service update --force --image phillipjensen/payment-monitor-backend-celery:${{ github.sha }} payments_celery
                 docker service update --force --image phillipjensen/payment-monitor-backend-celery-beat:${{ github.sha }} payments_celery_beat
