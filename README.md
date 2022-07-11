@@ -72,8 +72,7 @@ Deleting the database (restoring to default state)
 * Django management script: `python manage.py createsuperuser`
 * Alternatively, you can set it manually in the database of your user:
 Table: api_users, Column: is_superuser
-* 
-
+* You can to Django admin page: `http://api.localhost/admin/` and login with superuser credentials
 
 ### Docker tricks
 
